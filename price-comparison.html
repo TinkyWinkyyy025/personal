@@ -1130,8 +1130,13 @@
                         <div class="add-product-form">
                             <input type="text" id="newProductKey" placeholder="产品ID (例如: phone-13pro)" maxlength="50">
                             <input type="text" id="newProductName" placeholder="产品名称 (例如: iPhone 13 Pro)" maxlength="100">
-                            <select id="newProductCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                            <input type="text" id="newProductBrand" placeholder="品牌 (例如: Apple, Samsung)" maxlength="50">
+                            <select id="newProductCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;" onchange="updateSubcategoryDropdown()">
                                 <option value="">选择品类...</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                            <select id="newProductSubcategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                                <option value="">选择子品类...</option>
                                 <!-- Will be populated by JavaScript -->
                             </select>
                             <button class="btn btn-success" onclick="addNewProduct()">添加产品</button>
@@ -1140,7 +1145,9 @@
                             <strong>💡 提示：</strong><br>
                             • 产品ID：用英文和数字，不要有空格 (例如: phone-13pro, book-cooking-101)<br>
                             • 产品名称：可以使用中文，这是显示在标签页的名称<br>
-                            • 品类：选择产品所属的品类，用于分组管理<br>
+                            • 品牌：产品的品牌名称，用于搜索和筛选<br>
+                            • 品类：选择产品所属的大品类（如：护肤、美妆等）<br>
+                            • 子品类：选择具体的子分类（如：Cleanser, Toner等），需先选择品类<br>
                             • 默认产品不能删除，但你可以添加自定义产品
                         </div>
                     </div>
@@ -1668,6 +1675,26 @@
             dropdown.innerHTML = html;
         }
 
+        // Update subcategory dropdown based on selected category
+        function updateSubcategoryDropdown() {
+            const categoryDropdown = document.getElementById('newProductCategory');
+            const subcategoryDropdown = document.getElementById('newProductSubcategory');
+
+            if (!categoryDropdown || !subcategoryDropdown) return;
+
+            const selectedCategory = categoryDropdown.value;
+
+            let html = '<option value="">选择子品类...</option>';
+
+            if (selectedCategory && subcategories[selectedCategory]) {
+                subcategories[selectedCategory].forEach(subcat => {
+                    html += `<option value="${subcat}">${subcat}</option>`;
+                });
+            }
+
+            subcategoryDropdown.innerHTML = html;
+        }
+
         // Add new store
         function addNewStore() {
             const storeName = document.getElementById('newStoreName').value.trim();
@@ -1828,7 +1855,9 @@
         function addNewProduct() {
             const key = document.getElementById('newProductKey').value.trim();
             const name = document.getElementById('newProductName').value.trim();
+            const brand = document.getElementById('newProductBrand').value.trim();
             const category = document.getElementById('newProductCategory').value;
+            const subcategory = document.getElementById('newProductSubcategory').value;
 
             // Validation
             if (!key || !name) {
@@ -1836,8 +1865,18 @@
                 return;
             }
 
+            if (!brand) {
+                alert('请填写品牌名称！');
+                return;
+            }
+
             if (!category) {
                 alert('请选择产品品类！');
+                return;
+            }
+
+            if (!subcategory) {
+                alert('请选择子品类！');
                 return;
             }
 
@@ -1858,6 +1897,8 @@
             products[key] = name;
             priceData[key] = [];
             productCategories[key] = category;
+            productBrands[key] = brand;
+            productSubcategories[key] = subcategory;
 
             // Initialize product stores with default stores
             if (!productStores[key]) {
@@ -1868,12 +1909,16 @@
             saveCustomProducts();
             saveData();
             saveProductCategories();
+            saveProductBrands();
+            saveProductSubcategories();
             saveProductStores();
 
             // Clear form
             document.getElementById('newProductKey').value = '';
             document.getElementById('newProductName').value = '';
+            document.getElementById('newProductBrand').value = '';
             document.getElementById('newProductCategory').value = '';
+            document.getElementById('newProductSubcategory').value = '';
 
             // Refresh necessary components
             alert('产品添加成功！');
@@ -1951,7 +1996,9 @@
 
             let html = '<table class="compact-table"><thead><tr>';
             html += '<th>产品名称</th>';
+            html += '<th>品牌</th>';
             html += '<th>品类</th>';
+            html += '<th>子品类</th>';
             html += '<th>商店</th>';
             html += '<th>记录</th>';
             html += '<th>操作</th>';
@@ -1960,14 +2007,18 @@
             Object.keys(products).forEach(key => {
                 const isDefault = defaultProducts[key] !== undefined;
                 const name = products[key];
+                const brand = productBrands[key] || '-';
                 const recordCount = priceData[key] ? priceData[key].length : 0;
                 const categoryKey = productCategories[key] || '';
                 const categoryName = categoryKey ? (categories[categoryKey] || categoryKey) : '未分类';
+                const subcategory = productSubcategories[key] || '-';
                 const storeCount = (productStores[key] || []).length;
 
                 html += `<tr id="product-row-${key}">`;
                 html += `<td><strong>${name}</strong> ${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}</td>`;
+                html += `<td>${brand}</td>`;
                 html += `<td><span class="product-badge" style="background: #ff9800; font-size: 11px;">${categoryName}</span></td>`;
+                html += `<td>${subcategory}</td>`;
                 html += `<td style="text-align: center;">${storeCount}</td>`;
                 html += `<td style="text-align: center;">${recordCount}</td>`;
                 html += `<td>`;
@@ -1979,7 +2030,7 @@
 
                 // Inline config row (hidden by default)
                 html += `<tr id="product-config-${key}" style="display: none;" class="inline-config-row">`;
-                html += `<td colspan="5"><div class="inline-config">`;
+                html += `<td colspan="7"><div class="inline-config">`;
                 html += `<strong>选择商店：</strong>`;
                 html += `<div class="store-checkbox-list" id="stores-for-${key}">`;
                 stores.forEach(store => {
