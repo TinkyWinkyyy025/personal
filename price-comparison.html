@@ -168,7 +168,6 @@
 
         .form-row {
             display: grid;
-            grid-template-columns: 150px repeat(4, 1fr) repeat(4, 1fr);
             gap: 10px;
             margin-bottom: 10px;
             align-items: center;
@@ -800,8 +799,8 @@
         <div id="tobuy" class="tab-content">
             <h3 style="color: #667eea; margin-bottom: 20px;">🛒 购物清单 - To Buy List</h3>
 
-            <div class="product-management" style="background: #e1f5fe; border-color: #0288d1;">
-                <h3 style="color: #01579b;">➕ 添加待购商品</h3>
+            <div class="product-management">
+                <h3>➕ 添加待购商品</h3>
                 <div class="add-product-form">
                     <input type="text" id="toBuyItemName" placeholder="商品名称 (例如: iPhone 15 Pro)" maxlength="100">
                     <input type="text" id="toBuyStore" placeholder="期望商店 (可选)" maxlength="50">
@@ -809,7 +808,7 @@
                     <input type="text" id="toBuyNotes" placeholder="备注 (可选)" maxlength="200">
                     <button class="btn btn-success" onclick="addToBuyItem()">添加到清单</button>
                 </div>
-                <div class="tip-box" style="background: #e3f2fd; border-color: #2196f3;">
+                <div class="tip-box">
                     <strong>💡 提示：</strong><br>
                     • 在这里记录你想购买的商品<br>
                     • 设置目标价格，当价格达到时你就知道该买了<br>
@@ -881,14 +880,14 @@
                 <!-- Will be populated by JavaScript -->
             </div>
 
-            <div class="product-management" style="margin-top: 30px; background: #fce4ec; border-color: #e91e63;">
-                <h3 style="color: #c2185b;">🏷️ 添加新品类</h3>
+            <div class="product-management" style="margin-top: 30px; background: #f3e5f5; border-color: #9c27b0;">
+                <h3 style="color: #7b1fa2;">🏷️ 添加新品类</h3>
                 <div class="add-product-form">
                     <input type="text" id="newCategoryKey" placeholder="品类ID (例如: electronics, books)" maxlength="50">
                     <input type="text" id="newCategoryName" placeholder="品类名称 (例如: 电子产品, 书籍)" maxlength="100">
                     <button class="btn btn-success" onclick="addNewCategory()">添加品类</button>
                 </div>
-                <div class="tip-box" style="background: #fff8e1; border-color: #ffc107;">
+                <div class="tip-box">
                     <strong>💡 提示：</strong><br>
                     • 品类ID：用英文和数字，不要有空格 (例如: electronics, books, food)<br>
                     • 品类名称：可以使用中文，这是显示在分组中的名称<br>
