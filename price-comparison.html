@@ -588,28 +588,37 @@
                     建议定期使用"导出数据"功能备份。
                 </div>
 
-                <h3>➕ 产品管理</h3>
+                <h3>➕ 产品和商店管理</h3>
                 <h4>添加自定义产品</h4>
                 <ul style="margin-left: 25px; margin-top: 10px;">
                     <li>点击"➕ 管理产品"标签页</li>
-                    <li>输入产品ID（英文和数字，无空格，例如：lotion-355）</li>
+                    <li>在"添加新产品"区域输入产品ID（英文和数字，无空格，例如：lotion-355）</li>
                     <li>输入产品名称（可以使用中文，例如：CeraVe Lotion 355ml）</li>
                     <li>点击"添加产品"按钮</li>
                     <li>新产品标签页会自动出现</li>
                 </ul>
 
-                <h4>删除自定义产品</h4>
+                <h4>添加自定义商店</h4>
                 <ul style="margin-left: 25px; margin-top: 10px;">
-                    <li>在"管理产品"页面找到要删除的产品</li>
-                    <li>点击"删除"按钮（默认产品无法删除）</li>
-                    <li>确认删除后，产品及其所有价格记录将被删除</li>
+                    <li>点击"➕ 管理产品"标签页</li>
+                    <li>向下滚动到"添加新商店"区域</li>
+                    <li>输入商店名称（可以使用英文或中文，例如：BigPharmacy 或 万宁）</li>
+                    <li>点击"添加商店"按钮</li>
+                    <li>所有产品的价格输入表格会自动增加新商店的列</li>
+                </ul>
+
+                <h4>删除自定义产品或商店</h4>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>在"管理产品"页面找到要删除的项目</li>
+                    <li>点击"删除"按钮（默认产品和商店无法删除）</li>
+                    <li>确认删除后，数据将被删除</li>
                 </ul>
 
                 <h3>🔄 数据管理</h3>
                 <ul style="margin-left: 25px; margin-top: 10px;">
-                    <li><strong>导出为JSON</strong>：备份所有数据（包括自定义产品）</li>
+                    <li><strong>导出为JSON</strong>：备份所有数据（包括自定义产品和商店）</li>
                     <li><strong>导入数据</strong>：恢复之前的备份</li>
-                    <li><strong>清除所有数据</strong>：重新开始（谨慎使用）</li>
+                    <li><strong>清除所有数据</strong>：重新开始（谨慎使用，会删除所有数据）</li>
                 </ul>
             </div>
         </div>
@@ -635,6 +644,25 @@
             <div class="product-list" id="productList">
                 <!-- Will be populated by JavaScript -->
             </div>
+
+            <div class="product-management" style="margin-top: 30px; background: #fff3e0; border-color: #ff9800;">
+                <h3 style="color: #f57c00;">🏪 添加新商店</h3>
+                <div class="add-product-form">
+                    <input type="text" id="newStoreName" placeholder="商店名称 (例如: BigPharmacy, AEON)" maxlength="50">
+                    <button class="btn btn-success" onclick="addNewStore()">添加商店</button>
+                </div>
+                <div class="tip-box" style="background: #fff8e1; border-color: #ffc107;">
+                    <strong>💡 提示：</strong><br>
+                    • 商店名称：可以使用英文或中文 (例如: BigPharmacy, 万宁)<br>
+                    • 添加后，所有产品的价格输入表格都会增加这个商店的列<br>
+                    • 默认商店不能删除，但你可以添加和删除自定义商店
+                </div>
+            </div>
+
+            <h3 style="color: #667eea; margin-bottom: 20px;">🏪 商店列表</h3>
+            <div class="product-list" id="storeList">
+                <!-- Will be populated by JavaScript -->
+            </div>
         </div>
 
         <!-- Summary Tab -->
@@ -648,22 +676,8 @@
                 <button class="btn btn-delete" onclick="clearAllData()">🗑️ 清除所有数据</button>
             </div>
 
-            <table class="price-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Guardian</th>
-                        <th>Watsons</th>
-                        <th>Caring</th>
-                        <th>Shopee</th>
-                        <th>Current Low</th>
-                        <th>Best Store</th>
-                        <th>Hist. Low</th>
-                    </tr>
-                </thead>
-                <tbody id="summaryTableBody">
-                    <!-- Will be populated by JavaScript -->
-                </tbody>
+            <table class="price-table" id="summaryTable">
+                <!-- Will be populated by JavaScript -->
             </table>
         </div>
 
@@ -683,12 +697,15 @@
             'garnier': 'Garnier Rose Water 400ml'
         };
 
-        const stores = ['Guardian', 'Watsons', 'Caring', 'Shopee'];
+        // Default stores (cannot be deleted)
+        const defaultStores = ['Guardian', 'Watsons', 'Caring', 'Shopee'];
 
         // Initialize data structure
         let priceData = {};
         let customProducts = {}; // Custom products added by user
         let products = {}; // Combined products (default + custom)
+        let customStores = []; // Custom stores added by user
+        let stores = []; // Combined stores (default + custom)
 
         // Load data from localStorage
         function loadData() {
@@ -704,8 +721,15 @@
                 customProducts = JSON.parse(savedProducts);
             }
 
-            // Combine default and custom products
+            // Load custom stores
+            const savedStores = localStorage.getItem('customStores');
+            if (savedStores) {
+                customStores = JSON.parse(savedStores);
+            }
+
+            // Combine default and custom products/stores
             products = { ...defaultProducts, ...customProducts };
+            stores = [...defaultStores, ...customStores];
 
             // Initialize empty data for new products
             Object.keys(products).forEach(key => {
@@ -723,6 +747,102 @@
         // Save custom products to localStorage
         function saveCustomProducts() {
             localStorage.setItem('customProducts', JSON.stringify(customProducts));
+        }
+
+        // Save custom stores to localStorage
+        function saveCustomStores() {
+            localStorage.setItem('customStores', JSON.stringify(customStores));
+        }
+
+        // Add new store
+        function addNewStore() {
+            const storeName = document.getElementById('newStoreName').value.trim();
+
+            // Validation
+            if (!storeName) {
+                alert('请填写商店名称！');
+                return;
+            }
+
+            // Check if store already exists
+            if (stores.includes(storeName)) {
+                alert('商店已存在！请使用不同的名称');
+                return;
+            }
+
+            // Add to custom stores
+            customStores.push(storeName);
+            stores.push(storeName);
+
+            // Save and refresh
+            saveCustomStores();
+
+            // Clear form
+            document.getElementById('newStoreName').value = '';
+
+            // Refresh the page to show new store
+            alert('商店添加成功！');
+            initializeApp();
+        }
+
+        // Delete store
+        function deleteStore(storeName) {
+            if (defaultStores.includes(storeName)) {
+                alert('默认商店不能删除！');
+                return;
+            }
+
+            if (confirm(`确定要删除商店 "${storeName}" 吗？\n这不会删除价格记录，但该商店的列将不再显示。`)) {
+                // Remove from custom stores
+                const index = customStores.indexOf(storeName);
+                if (index > -1) {
+                    customStores.splice(index, 1);
+                }
+                stores = [...defaultStores, ...customStores];
+
+                // Save
+                saveCustomStores();
+
+                alert('商店已删除！');
+                initializeApp();
+            }
+        }
+
+        // Update store list UI
+        function updateStoreList() {
+            const listDiv = document.getElementById('storeList');
+            let html = '';
+
+            stores.forEach(storeName => {
+                const isDefault = defaultStores.includes(storeName);
+
+                // Count records for this store
+                let recordCount = 0;
+                Object.keys(priceData).forEach(productKey => {
+                    priceData[productKey].forEach(entry => {
+                        if (entry.prices[storeName] && (entry.prices[storeName].regular || entry.prices[storeName].promo)) {
+                            recordCount++;
+                        }
+                    });
+                });
+
+                html += `
+                    <div class="product-item ${isDefault ? 'default' : ''}">
+                        <div>
+                            <strong>${storeName}</strong>
+                            ${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}
+                            <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">
+                                价格记录数: ${recordCount}
+                            </div>
+                        </div>
+                        <div>
+                            ${!isDefault ? `<button class="btn-delete" onclick="deleteStore('${storeName}')">删除</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            listDiv.innerHTML = html;
         }
 
         // Add new product
@@ -866,6 +986,7 @@
                 updateSummaryTable();
             } else if (tabId === 'manage-products') {
                 updateProductList();
+                updateStoreList();
             }
         }
 
@@ -931,27 +1052,22 @@
                 <!-- Price Entry Form -->
                 <div class="price-entry">
                     <h3>📝 记录价格</h3>
-                    <div class="form-row header">
+                    <div class="form-row header" style="grid-template-columns: 150px repeat(${stores.length * 2}, 1fr);">
                         <div>日期</div>
-                        <div>Guardian<br>Price</div>
-                        <div>Guardian<br>Promo</div>
-                        <div>Watsons<br>Price</div>
-                        <div>Watsons<br>Promo</div>
-                        <div>Caring<br>Price</div>
-                        <div>Caring<br>Promo</div>
-                        <div>Shopee<br>Price</div>
-                        <div>Shopee<br>Promo</div>
+                        ${stores.map(store => `
+                            <div>${store}<br>Price</div>
+                            <div>${store}<br>Promo</div>
+                        `).join('')}
                     </div>
-                    <div class="form-row">
+                    <div class="form-row" style="grid-template-columns: 150px repeat(${stores.length * 2}, 1fr);">
                         <input type="date" id="${productKey}-date" value="${new Date().toISOString().split('T')[0]}">
-                        <input type="number" id="${productKey}-guardian-price" placeholder="0.00" step="0.01">
-                        <input type="number" id="${productKey}-guardian-promo" placeholder="0.00" step="0.01" class="promo-input">
-                        <input type="number" id="${productKey}-watsons-price" placeholder="0.00" step="0.01">
-                        <input type="number" id="${productKey}-watsons-promo" placeholder="0.00" step="0.01" class="promo-input">
-                        <input type="number" id="${productKey}-caring-price" placeholder="0.00" step="0.01">
-                        <input type="number" id="${productKey}-caring-promo" placeholder="0.00" step="0.01" class="promo-input">
-                        <input type="number" id="${productKey}-shopee-price" placeholder="0.00" step="0.01">
-                        <input type="number" id="${productKey}-shopee-promo" placeholder="0.00" step="0.01" class="promo-input">
+                        ${stores.map(store => {
+                            const storeKey = store.toLowerCase().replace(/\s+/g, '-');
+                            return `
+                                <input type="number" id="${productKey}-${storeKey}-price" placeholder="0.00" step="0.01">
+                                <input type="number" id="${productKey}-${storeKey}-promo" placeholder="0.00" step="0.01" class="promo-input">
+                            `;
+                        }).join('')}
                     </div>
                     <button class="btn btn-primary" onclick="savePriceEntry('${productKey}')">💾 保存价格记录</button>
                 </div>
@@ -967,10 +1083,7 @@
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Guardian</th>
-                            <th>Watsons</th>
-                            <th>Caring</th>
-                            <th>Shopee</th>
+                            ${stores.map(store => `<th>${store}</th>`).join('')}
                             <th>Lowest</th>
                             <th>Best Store</th>
                             <th>Diff</th>
@@ -1044,7 +1157,7 @@
             };
 
             stores.forEach(store => {
-                const storeKey = store.toLowerCase();
+                const storeKey = store.toLowerCase().replace(/\s+/g, '-');
                 const price = parseFloat(document.getElementById(`${productKey}-${storeKey}-price`).value) || null;
                 const promo = parseFloat(document.getElementById(`${productKey}-${storeKey}-promo`).value) || null;
 
@@ -1066,7 +1179,7 @@
 
             // Clear form
             stores.forEach(store => {
-                const storeKey = store.toLowerCase();
+                const storeKey = store.toLowerCase().replace(/\s+/g, '-');
                 document.getElementById(`${productKey}-${storeKey}-price`).value = '';
                 document.getElementById(`${productKey}-${storeKey}-promo`).value = '';
             });
@@ -1291,17 +1404,26 @@
 
         // Update summary table
         function updateSummaryTable() {
-            const tbody = document.getElementById('summaryTableBody');
-            let html = '';
+            const table = document.getElementById('summaryTable');
+
+            // Generate table header
+            let headerHtml = '<thead><tr><th>Product</th>';
+            stores.forEach(store => {
+                headerHtml += `<th>${store}</th>`;
+            });
+            headerHtml += '<th>Current Low</th><th>Best Store</th><th>Hist. Low</th></tr></thead>';
+
+            // Generate table body
+            let bodyHtml = '<tbody>';
 
             Object.keys(products).forEach(key => {
                 const productName = products[key];
                 const data = priceData[key] || [];
 
                 if (data.length === 0) {
-                    html += `<tr>
+                    bodyHtml += `<tr>
                         <td style="text-align: left;"><strong>${productName}</strong></td>
-                        <td colspan="7" style="color: #6c757d;">暂无数据</td>
+                        <td colspan="${stores.length + 3}" style="color: #6c757d;">暂无数据</td>
                     </tr>`;
                     return;
                 }
@@ -1346,8 +1468,8 @@
                 // Check if current low is all-time low
                 const isAllTimeLow = currentLow === histLow;
 
-                html += '<tr>';
-                html += `<td style="text-align: left;"><strong>${productName}</strong></td>`;
+                bodyHtml += '<tr>';
+                bodyHtml += `<td style="text-align: left;"><strong>${productName}</strong></td>`;
 
                 stores.forEach(store => {
                     const price = storePrices[store];
@@ -1355,24 +1477,26 @@
                     if (price === currentLow) {
                         cellClass = isAllTimeLow ? 'all-time-low' : 'lowest-price';
                     }
-                    html += `<td class="${cellClass}">${price ? 'RM ' + price.toFixed(2) : '-'}</td>`;
+                    bodyHtml += `<td class="${cellClass}">${price ? 'RM ' + price.toFixed(2) : '-'}</td>`;
                 });
 
                 const currentLowClass = isAllTimeLow ? 'all-time-low' : 'lowest-price';
-                html += `<td class="${currentLowClass}">RM ${currentLow.toFixed(2)}</td>`;
-                html += `<td class="${currentLowClass}">${bestStore}</td>`;
-                html += `<td style="background: #fff2cc; font-weight: bold;">RM ${histLow.toFixed(2)}</td>`;
-                html += '</tr>';
+                bodyHtml += `<td class="${currentLowClass}">RM ${currentLow.toFixed(2)}</td>`;
+                bodyHtml += `<td class="${currentLowClass}">${bestStore}</td>`;
+                bodyHtml += `<td style="background: #fff2cc; font-weight: bold;">RM ${histLow.toFixed(2)}</td>`;
+                bodyHtml += '</tr>';
             });
 
-            tbody.innerHTML = html;
+            bodyHtml += '</tbody>';
+            table.innerHTML = headerHtml + bodyHtml;
         }
 
         // Export data
         function exportData() {
             const exportObj = {
                 priceData: priceData,
-                customProducts: customProducts
+                customProducts: customProducts,
+                customStores: customStores
             };
             const dataStr = JSON.stringify(exportObj, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
@@ -1395,15 +1519,17 @@
                     if (confirm('导入数据将覆盖现有数据，确定继续吗？')) {
                         // Support both old and new format
                         if (imported.priceData && imported.customProducts !== undefined) {
-                            // New format with custom products
+                            // New format with custom products and stores
                             priceData = imported.priceData;
-                            customProducts = imported.customProducts;
+                            customProducts = imported.customProducts || {};
+                            customStores = imported.customStores || [];
                         } else {
                             // Old format (just price data)
                             priceData = imported;
                         }
                         saveData();
                         saveCustomProducts();
+                        saveCustomStores();
                         alert('数据导入成功！');
                         location.reload();
                     }
@@ -1416,10 +1542,11 @@
 
         // Clear all data
         function clearAllData() {
-            if (confirm('警告：这将删除所有价格记录和自定义产品！确定要继续吗？')) {
+            if (confirm('警告：这将删除所有价格记录、自定义产品和自定义商店！确定要继续吗？')) {
                 if (confirm('再次确认：所有数据将被永久删除，无法恢复！')) {
                     localStorage.removeItem('ceravePriceData');
                     localStorage.removeItem('customProducts');
+                    localStorage.removeItem('customStores');
                     location.reload();
                 }
             }
@@ -1435,9 +1562,10 @@
                 createProductPage(key);
             });
 
-            // Update summary and product list
+            // Update summary, product list, and store list
             updateSummaryTable();
             updateProductList();
+            updateStoreList();
         }
 
         // Initialize on load
