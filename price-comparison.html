@@ -486,6 +486,7 @@
 
         <div class="tabs" id="tabsContainer">
             <button class="tab active" onclick="switchTab('guide')">📖 使用指南</button>
+            <button class="tab" onclick="switchTab('calculator')">🧮 促销计算器</button>
             <button class="tab" onclick="switchTab('manage-products')">➕ 管理产品</button>
             <button class="tab" onclick="switchTab('summary')">📊 价格总览</button>
             <!-- Product tabs will be dynamically generated here -->
@@ -550,17 +551,24 @@
                 </table>
 
                 <h3>📝 如何使用</h3>
-                <h4>1. 记录价格</h4>
+                <h4>1. 计算促销价格（可选）</h4>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>如果有促销活动，先点击 <strong>🧮 促销计算器</strong> 标签页</li>
+                    <li>选择对应的促销类型（如买一送一、第二件半价等）</li>
+                    <li>输入原价，系统会自动计算促销单价</li>
+                    <li>记住或复制这个促销单价</li>
+                </ul>
+
+                <h4>2. 记录价格</h4>
                 <ul style="margin-left: 25px; margin-top: 10px;">
                     <li>选择产品标签页</li>
-                    <li>在促销计算器输入原价，自动计算促销单价</li>
                     <li>在价格输入表格填入日期和价格</li>
                     <li><strong>Price列</strong>：填入原价</li>
                     <li><strong>Promo列（橙色）</strong>：如果有促销，填入计算后的单价</li>
                     <li>点击"保存价格记录"按钮</li>
                 </ul>
 
-                <h4>2. 查看分析</h4>
+                <h4>3. 查看分析</h4>
                 <ul style="margin-left: 25px; margin-top: 10px;">
                     <li>🟢 绿色背景 = 当前最低价格</li>
                     <li>🏆 金色背景 = 全年最低价（历史最便宜）</li>
@@ -620,6 +628,85 @@
                     <li><strong>导入数据</strong>：恢复之前的备份</li>
                     <li><strong>清除所有数据</strong>：重新开始（谨慎使用，会删除所有数据）</li>
                 </ul>
+            </div>
+        </div>
+
+        <!-- Calculator Tab -->
+        <div id="calculator" class="tab-content">
+            <h3 style="color: #667eea; margin-bottom: 20px;">🧮 促销计算器</h3>
+
+            <div class="promo-calculator">
+                <div class="calc-grid">
+                    <div class="calc-item">
+                        <h4>第二件半价 (2nd -50%)</h4>
+                        <div class="calc-input">
+                            <input type="number" id="calc1" placeholder="原价" step="0.01" oninput="calculatePromo(1)">
+                        </div>
+                        <div class="calc-result" id="result1">单价: RM 0.00</div>
+                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 8px;">
+                            公式: (原价 × 1.5) ÷ 2
+                        </div>
+                    </div>
+                    <div class="calc-item">
+                        <h4>第二件-30% (2nd -30%)</h4>
+                        <div class="calc-input">
+                            <input type="number" id="calc2" placeholder="原价" step="0.01" oninput="calculatePromo(2)">
+                        </div>
+                        <div class="calc-result" id="result2">单价: RM 0.00</div>
+                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 8px;">
+                            公式: (原价 × 1.7) ÷ 2
+                        </div>
+                    </div>
+                    <div class="calc-item">
+                        <h4>买一送一 (Buy 1 Free 1)</h4>
+                        <div class="calc-input">
+                            <input type="number" id="calc3" placeholder="原价" step="0.01" oninput="calculatePromo(3)">
+                        </div>
+                        <div class="calc-result" id="result3">单价: RM 0.00</div>
+                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 8px;">
+                            公式: 原价 ÷ 2
+                        </div>
+                    </div>
+                    <div class="calc-item">
+                        <h4>买二送一 (Buy 2 Free 1)</h4>
+                        <div class="calc-input">
+                            <input type="number" id="calc4" placeholder="原价" step="0.01" oninput="calculatePromo(4)">
+                        </div>
+                        <div class="calc-result" id="result4">单价: RM 0.00</div>
+                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 8px;">
+                            公式: (原价 × 2) ÷ 3
+                        </div>
+                    </div>
+                    <div class="calc-item">
+                        <h4>固定价格 (e.g. 3 for RM60)</h4>
+                        <div class="calc-input">
+                            <input type="number" id="calc5-total" placeholder="总价" step="0.01" oninput="calculatePromo(5)">
+                            <input type="number" id="calc5-qty" placeholder="数量" step="1" oninput="calculatePromo(5)">
+                        </div>
+                        <div class="calc-result" id="result5">单价: RM 0.00</div>
+                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 8px;">
+                            公式: 总价 ÷ 数量
+                        </div>
+                    </div>
+                    <div class="calc-item">
+                        <h4>百分比折扣 (% OFF)</h4>
+                        <div class="calc-input">
+                            <input type="number" id="calc6-price" placeholder="原价" step="0.01" oninput="calculatePromo(6)">
+                            <input type="number" id="calc6-percent" placeholder="折扣%" step="1" oninput="calculatePromo(6)">
+                        </div>
+                        <div class="calc-result" id="result6">单价: RM 0.00</div>
+                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 8px;">
+                            公式: 原价 × (1 - 折扣% ÷ 100)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box" style="margin-top: 20px;">
+                <strong>💡 使用提示：</strong><br>
+                • 输入原价后，系统会自动计算促销单价<br>
+                • 计算出来的单价可以直接填入产品页面的"Promo"列<br>
+                • 这样可以公平比较不同促销方式的实际价格
             </div>
         </div>
 
@@ -998,55 +1085,9 @@
             contentDiv.innerHTML = `
                 <h3 style="color: #667eea; margin-bottom: 20px;">${productName}</h3>
 
-                <!-- Promo Calculator -->
-                <div class="promo-calculator">
-                    <h3>🧮 促销计算器</h3>
-                    <div class="calc-grid">
-                        <div class="calc-item">
-                            <h4>第二件半价 (2nd -50%)</h4>
-                            <div class="calc-input">
-                                <input type="number" id="${productKey}-calc1" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 1)">
-                            </div>
-                            <div class="calc-result" id="${productKey}-result1">单价: RM 0.00</div>
-                        </div>
-                        <div class="calc-item">
-                            <h4>第二件-30% (2nd -30%)</h4>
-                            <div class="calc-input">
-                                <input type="number" id="${productKey}-calc2" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 2)">
-                            </div>
-                            <div class="calc-result" id="${productKey}-result2">单价: RM 0.00</div>
-                        </div>
-                        <div class="calc-item">
-                            <h4>买一送一 (Buy 1 Free 1)</h4>
-                            <div class="calc-input">
-                                <input type="number" id="${productKey}-calc3" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 3)">
-                            </div>
-                            <div class="calc-result" id="${productKey}-result3">单价: RM 0.00</div>
-                        </div>
-                        <div class="calc-item">
-                            <h4>买二送一 (Buy 2 Free 1)</h4>
-                            <div class="calc-input">
-                                <input type="number" id="${productKey}-calc4" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 4)">
-                            </div>
-                            <div class="calc-result" id="${productKey}-result4">单价: RM 0.00</div>
-                        </div>
-                        <div class="calc-item">
-                            <h4>固定价格 (e.g. 3 for RM60)</h4>
-                            <div class="calc-input">
-                                <input type="number" id="${productKey}-calc5-total" placeholder="总价" step="0.01" oninput="calculate('${productKey}', 5)">
-                                <input type="number" id="${productKey}-calc5-qty" placeholder="数量" step="1" oninput="calculate('${productKey}', 5)">
-                            </div>
-                            <div class="calc-result" id="${productKey}-result5">单价: RM 0.00</div>
-                        </div>
-                        <div class="calc-item">
-                            <h4>百分比折扣 (% OFF)</h4>
-                            <div class="calc-input">
-                                <input type="number" id="${productKey}-calc6-price" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 6)">
-                                <input type="number" id="${productKey}-calc6-percent" placeholder="折扣%" step="1" oninput="calculate('${productKey}', 6)">
-                            </div>
-                            <div class="calc-result" id="${productKey}-result6">单价: RM 0.00</div>
-                        </div>
-                    </div>
+                <div class="tip-box" style="background: #fff9e6; border-color: #ffc107;">
+                    <strong>🧮 需要计算促销价格？</strong><br>
+                    点击 <strong>🧮 促销计算器</strong> 标签页来计算各种促销的单价
                 </div>
 
                 <!-- Price Entry Form -->
@@ -1100,47 +1141,47 @@
             updateProductPage(productKey);
         }
 
-        // Calculate promo prices
-        function calculate(productKey, type) {
+        // Global promo calculator
+        function calculatePromo(type) {
             let result = 0;
             let resultText = '';
 
             switch(type) {
                 case 1: // 2nd item -50%
-                    const price1 = parseFloat(document.getElementById(`${productKey}-calc1`).value) || 0;
+                    const price1 = parseFloat(document.getElementById('calc1').value) || 0;
                     result = (price1 * 1.5) / 2;
                     resultText = `单价: RM ${result.toFixed(2)}`;
                     break;
                 case 2: // 2nd item -30%
-                    const price2 = parseFloat(document.getElementById(`${productKey}-calc2`).value) || 0;
+                    const price2 = parseFloat(document.getElementById('calc2').value) || 0;
                     result = (price2 * 1.7) / 2;
                     resultText = `单价: RM ${result.toFixed(2)}`;
                     break;
                 case 3: // Buy 1 Free 1
-                    const price3 = parseFloat(document.getElementById(`${productKey}-calc3`).value) || 0;
+                    const price3 = parseFloat(document.getElementById('calc3').value) || 0;
                     result = price3 / 2;
                     resultText = `单价: RM ${result.toFixed(2)}`;
                     break;
                 case 4: // Buy 2 Free 1
-                    const price4 = parseFloat(document.getElementById(`${productKey}-calc4`).value) || 0;
+                    const price4 = parseFloat(document.getElementById('calc4').value) || 0;
                     result = (price4 * 2) / 3;
                     resultText = `单价: RM ${result.toFixed(2)}`;
                     break;
                 case 5: // Fixed price
-                    const total = parseFloat(document.getElementById(`${productKey}-calc5-total`).value) || 0;
-                    const qty = parseFloat(document.getElementById(`${productKey}-calc5-qty`).value) || 1;
+                    const total = parseFloat(document.getElementById('calc5-total').value) || 0;
+                    const qty = parseFloat(document.getElementById('calc5-qty').value) || 1;
                     result = total / qty;
                     resultText = `单价: RM ${result.toFixed(2)}`;
                     break;
                 case 6: // Percentage off
-                    const price6 = parseFloat(document.getElementById(`${productKey}-calc6-price`).value) || 0;
-                    const percent = parseFloat(document.getElementById(`${productKey}-calc6-percent`).value) || 0;
+                    const price6 = parseFloat(document.getElementById('calc6-price').value) || 0;
+                    const percent = parseFloat(document.getElementById('calc6-percent').value) || 0;
                     result = price6 * (1 - percent / 100);
                     resultText = `单价: RM ${result.toFixed(2)}`;
                     break;
             }
 
-            document.getElementById(`${productKey}-result${type}`).textContent = resultText;
+            document.getElementById(`result${type}`).textContent = resultText;
         }
 
         // Save price entry
