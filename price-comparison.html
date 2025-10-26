@@ -473,6 +473,47 @@
             margin-left: 10px;
         }
 
+        .store-checkbox-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .store-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+
+        .store-checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .store-checkbox-item label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .product-store-config {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .product-store-config h4 {
+            color: #7b1fa2;
+            margin-bottom: 15px;
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -492,7 +533,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧴 CeraVe & Garnier Price Tracker</h1>
+            <h1>💰 价格追踪器</h1>
             <p>追踪不同店铺的产品价格，自动计算最低价和促销单价</p>
         </div>
 
@@ -770,6 +811,20 @@
             <div class="product-list" id="storeList">
                 <!-- Will be populated by JavaScript -->
             </div>
+
+            <div class="product-management" style="margin-top: 30px; background: #f3e5f5; border-color: #9c27b0;">
+                <h3 style="color: #7b1fa2;">🔗 产品商店配置</h3>
+                <div class="tip-box" style="background: #fce4ec; border-color: #e91e63;">
+                    <strong>💡 说明：</strong><br>
+                    • 为每个产品选择显示哪些商店<br>
+                    • 只有被选择的商店才会在产品的价格输入表格中显示<br>
+                    • 这样可以避免不必要的空列，让表格更清晰
+                </div>
+            </div>
+
+            <div id="productStoresConfig" style="margin-top: 20px;">
+                <!-- Will be populated by JavaScript -->
+            </div>
         </div>
 
         <!-- Summary Tab -->
@@ -783,9 +838,9 @@
                 <button class="btn btn-delete" onclick="clearAllData()">🗑️ 清除所有数据</button>
             </div>
 
-            <table class="price-table" id="summaryTable">
+            <div id="summaryTableContainer">
                 <!-- Will be populated by JavaScript -->
-            </table>
+            </div>
         </div>
 
         <!-- Product Tabs Container (dynamically generated) -->
@@ -813,6 +868,7 @@
         let products = {}; // Combined products (default + custom)
         let customStores = []; // Custom stores added by user
         let stores = []; // Combined stores (default + custom)
+        let productStores = {}; // Stores for each product { productKey: [store1, store2, ...] }
 
         // Load data from localStorage
         function loadData() {
@@ -834,6 +890,12 @@
                 customStores = JSON.parse(savedStores);
             }
 
+            // Load product stores configuration
+            const savedProductStores = localStorage.getItem('productStores');
+            if (savedProductStores) {
+                productStores = JSON.parse(savedProductStores);
+            }
+
             // Combine default and custom products/stores
             products = { ...defaultProducts, ...customProducts };
             stores = [...defaultStores, ...customStores];
@@ -842,6 +904,10 @@
             Object.keys(products).forEach(key => {
                 if (!priceData[key]) {
                     priceData[key] = [];
+                }
+                // Initialize product stores if not exists (default to all default stores)
+                if (!productStores[key]) {
+                    productStores[key] = [...defaultStores];
                 }
             });
         }
@@ -859,6 +925,11 @@
         // Save custom stores to localStorage
         function saveCustomStores() {
             localStorage.setItem('customStores', JSON.stringify(customStores));
+        }
+
+        // Save product stores configuration to localStorage
+        function saveProductStores() {
+            localStorage.setItem('productStores', JSON.stringify(productStores));
         }
 
         // Add new store
@@ -950,6 +1021,71 @@
             });
 
             listDiv.innerHTML = html;
+        }
+
+        // Toggle store for product
+        function toggleStoreForProduct(productKey, storeName, isChecked) {
+            if (!productStores[productKey]) {
+                productStores[productKey] = [];
+            }
+
+            if (isChecked) {
+                // Add store if not already in the list
+                if (!productStores[productKey].includes(storeName)) {
+                    productStores[productKey].push(storeName);
+                }
+            } else {
+                // Remove store from the list
+                const index = productStores[productKey].indexOf(storeName);
+                if (index > -1) {
+                    productStores[productKey].splice(index, 1);
+                }
+            }
+
+            // Save configuration
+            saveProductStores();
+
+            // Refresh product page
+            createProductPage(productKey);
+        }
+
+        // Update product stores configuration UI
+        function updateProductStoresConfig() {
+            const configDiv = document.getElementById('productStoresConfig');
+            let html = '';
+
+            Object.keys(products).forEach(productKey => {
+                const productName = products[productKey];
+                const productStoresList = productStores[productKey] || [];
+
+                html += `
+                    <div class="product-store-config">
+                        <h4>${productName}</h4>
+                        <div class="store-checkbox-list">
+                            ${stores.map(store => {
+                                const isChecked = productStoresList.includes(store);
+                                const checkboxId = `${productKey}-store-${store.toLowerCase().replace(/\s+/g, '-')}`;
+                                return `
+                                    <div class="store-checkbox-item">
+                                        <input
+                                            type="checkbox"
+                                            id="${checkboxId}"
+                                            ${isChecked ? 'checked' : ''}
+                                            onchange="toggleStoreForProduct('${productKey}', '${store}', this.checked)"
+                                        >
+                                        <label for="${checkboxId}">${store}</label>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.85em; color: #6c757d;">
+                            已选择 ${productStoresList.length} 个商店
+                        </div>
+                    </div>
+                `;
+            });
+
+            configDiv.innerHTML = html;
         }
 
         // Add new product
@@ -1094,6 +1230,7 @@
             } else if (tabId === 'manage-products') {
                 updateProductList();
                 updateStoreList();
+                updateProductStoresConfig();
             }
         }
 
@@ -1101,6 +1238,7 @@
         function createProductPage(productKey) {
             const productName = products[productKey];
             const contentDiv = document.getElementById(`content-${productKey}`);
+            const productStoresList = productStores[productKey] || [];
 
             contentDiv.innerHTML = `
                 <h3 style="color: #667eea; margin-bottom: 20px;">${productName}</h3>
@@ -1110,20 +1248,27 @@
                     点击 <strong>🧮 促销计算器</strong> 标签页来计算各种促销的单价
                 </div>
 
+                ${productStoresList.length === 0 ? `
+                    <div class="warning-box" style="margin: 20px 0;">
+                        <strong>⚠️ 未配置商店：</strong><br>
+                        请前往 <strong>➕ 管理产品</strong> 标签页的"产品商店配置"区域，为此产品选择要显示的商店。
+                    </div>
+                ` : ''}
+
                 <!-- Price Entry Form -->
-                <div class="price-entry">
+                <div class="price-entry" ${productStoresList.length === 0 ? 'style="display: none;"' : ''}>
                     <h3>📝 记录价格</h3>
-                    <div class="form-row header" style="grid-template-columns: 150px repeat(${stores.length * 2}, 1fr) 200px;">
+                    <div class="form-row header" style="grid-template-columns: 150px repeat(${productStoresList.length * 2}, 1fr) 200px;">
                         <div>日期</div>
-                        ${stores.map(store => `
-                            <div>${store}<br>Price</div>
-                            <div>${store}<br>Promo</div>
+                        ${productStoresList.map(store => `
+                            <div>${store}<br>原价</div>
+                            <div>${store}<br>当前价</div>
                         `).join('')}
                         <div>备注 Remark</div>
                     </div>
-                    <div class="form-row" style="grid-template-columns: 150px repeat(${stores.length * 2}, 1fr) 200px;">
+                    <div class="form-row" style="grid-template-columns: 150px repeat(${productStoresList.length * 2}, 1fr) 200px;">
                         <input type="date" id="${productKey}-date" value="${new Date().toISOString().split('T')[0]}">
-                        ${stores.map(store => {
+                        ${productStoresList.map(store => {
                             const storeKey = store.toLowerCase().replace(/\s+/g, '-');
                             return `
                                 <input type="number" id="${productKey}-${storeKey}-price" placeholder="0.00" step="0.01">
@@ -1142,11 +1287,11 @@
 
                 <!-- Price History Table -->
                 <h3 style="color: #667eea; margin-bottom: 15px;">📈 价格历史记录</h3>
-                <table class="price-table">
+                <table class="price-table" ${productStoresList.length === 0 ? 'style="display: none;"' : ''}>
                     <thead>
                         <tr>
                             <th>Date</th>
-                            ${stores.map(store => `<th>${store}</th>`).join('')}
+                            ${productStoresList.map(store => `<th>${store}</th>`).join('')}
                             <th>Remark</th>
                             <th>Lowest</th>
                             <th>Best Store</th>
@@ -1216,6 +1361,7 @@
             }
 
             const remark = document.getElementById(`${productKey}-remark`).value.trim();
+            const productStoresList = productStores[productKey] || [];
 
             const entry = {
                 date: date,
@@ -1223,10 +1369,13 @@
                 remark: remark || ''
             };
 
-            stores.forEach(store => {
+            productStoresList.forEach(store => {
                 const storeKey = store.toLowerCase().replace(/\s+/g, '-');
-                const price = parseFloat(document.getElementById(`${productKey}-${storeKey}-price`).value) || null;
-                const promo = parseFloat(document.getElementById(`${productKey}-${storeKey}-promo`).value) || null;
+                const priceInput = document.getElementById(`${productKey}-${storeKey}-price`);
+                const promoInput = document.getElementById(`${productKey}-${storeKey}-promo`);
+
+                const price = priceInput ? parseFloat(priceInput.value) || null : null;
+                const promo = promoInput ? parseFloat(promoInput.value) || null : null;
 
                 entry.prices[store] = {
                     regular: price,
@@ -1245,10 +1394,12 @@
             updateProductPage(productKey);
 
             // Clear form
-            stores.forEach(store => {
+            productStoresList.forEach(store => {
                 const storeKey = store.toLowerCase().replace(/\s+/g, '-');
-                document.getElementById(`${productKey}-${storeKey}-price`).value = '';
-                document.getElementById(`${productKey}-${storeKey}-promo`).value = '';
+                const priceInput = document.getElementById(`${productKey}-${storeKey}-price`);
+                const promoInput = document.getElementById(`${productKey}-${storeKey}-promo`);
+                if (priceInput) priceInput.value = '';
+                if (promoInput) promoInput.value = '';
             });
             document.getElementById(`${productKey}-remark`).value = '';
 
@@ -1269,6 +1420,7 @@
         // Update statistics cards
         function updateStatisticsCards(productKey, data) {
             const statsDiv = document.getElementById(`${productKey}-stats`);
+            const productStoresList = productStores[productKey] || [];
 
             if (data.length === 0) {
                 statsDiv.innerHTML = '<p style="text-align: center; color: #6c757d;">暂无数据，请先添加价格记录</p>';
@@ -1278,7 +1430,7 @@
             // Calculate statistics
             let allPrices = [];
             data.forEach(entry => {
-                stores.forEach(store => {
+                productStoresList.forEach(store => {
                     const storeData = entry.prices[store];
                     if (storeData) {
                         const effectivePrice = storeData.promo || storeData.regular;
@@ -1294,7 +1446,7 @@
             // Find best store for current lowest
             let bestStore = '';
             const latestEntry = data[0];
-            stores.forEach(store => {
+            productStoresList.forEach(store => {
                 const storeData = latestEntry.prices[store];
                 if (storeData) {
                     const effectivePrice = storeData.promo || storeData.regular;
@@ -1331,9 +1483,10 @@
         // Update history table
         function updateHistoryTable(productKey, data) {
             const tbody = document.getElementById(`${productKey}-history`);
+            const productStoresList = productStores[productKey] || [];
 
             if (data.length === 0) {
-                const totalCols = 6 + stores.length; // Date + Stores + Remark + Lowest + Best Store + Diff + Trend + Action
+                const totalCols = 6 + productStoresList.length; // Date + Stores + Remark + Lowest + Best Store + Diff + Trend + Action
                 tbody.innerHTML = `<tr><td colspan="${totalCols}" style="text-align: center; color: #6c757d; padding: 30px;">暂无价格历史记录</td></tr>`;
                 return;
             }
@@ -1341,7 +1494,7 @@
             // Calculate all-time lowest price
             let allTimePrices = [];
             data.forEach(entry => {
-                stores.forEach(store => {
+                productStoresList.forEach(store => {
                     const storeData = entry.prices[store];
                     if (storeData) {
                         const effectivePrice = storeData.promo || storeData.regular;
@@ -1359,7 +1512,7 @@
                 let prices = [];
                 let priceDisplay = {};
 
-                stores.forEach(store => {
+                productStoresList.forEach(store => {
                     const storeData = entry.prices[store];
                     if (storeData) {
                         const effectivePrice = storeData.promo || storeData.regular;
@@ -1380,7 +1533,7 @@
 
                 // Find best store
                 let bestStore = '';
-                stores.forEach(store => {
+                productStoresList.forEach(store => {
                     if (priceDisplay[store] && priceDisplay[store].effective === lowest) {
                         bestStore = store;
                     }
@@ -1391,7 +1544,7 @@
                 if (index < data.length - 1) {
                     const prevEntry = data[index + 1];
                     let prevPrices = [];
-                    stores.forEach(store => {
+                    productStoresList.forEach(store => {
                         const storeData = prevEntry.prices[store];
                         if (storeData) {
                             const effectivePrice = storeData.promo || storeData.regular;
@@ -1411,7 +1564,7 @@
                 html += `<td>${entry.date}</td>`;
 
                 // Store prices
-                stores.forEach(store => {
+                productStoresList.forEach(store => {
                     const data = priceDisplay[store];
                     if (data) {
                         let cellClass = '';
@@ -1477,91 +1630,99 @@
 
         // Update summary table
         function updateSummaryTable() {
-            const table = document.getElementById('summaryTable');
-
-            // Generate table header
-            let headerHtml = '<thead><tr><th>Product</th>';
-            stores.forEach(store => {
-                headerHtml += `<th>${store}</th>`;
-            });
-            headerHtml += '<th>Current Low</th><th>Best Store</th><th>Hist. Low</th></tr></thead>';
-
-            // Generate table body
-            let bodyHtml = '<tbody>';
+            const container = document.getElementById('summaryTableContainer');
+            let html = '';
 
             Object.keys(products).forEach(key => {
                 const productName = products[key];
                 const data = priceData[key] || [];
+                const productStoresList = productStores[key] || [];
 
-                if (data.length === 0) {
-                    bodyHtml += `<tr>
-                        <td style="text-align: left;"><strong>${productName}</strong></td>
-                        <td colspan="${stores.length + 3}" style="color: #6c757d;">暂无数据</td>
-                    </tr>`;
-                    return;
-                }
+                html += `
+                    <div style="margin-bottom: 40px;">
+                        <h4 style="color: #667eea; margin-bottom: 15px;">${productName}</h4>
+                `;
 
-                // Get latest prices
-                const latest = data[0];
-                let storePrices = {};
-                let allPrices = [];
+                if (data.length === 0 || productStoresList.length === 0) {
+                    html += `
+                        <p style="color: #6c757d; font-style: italic;">
+                            ${data.length === 0 ? '暂无价格数据' : '未配置商店'}
+                        </p>
+                    `;
+                } else {
+                    // Get latest prices
+                    const latest = data[0];
+                    let storePrices = {};
+                    let allPrices = [];
 
-                stores.forEach(store => {
-                    const storeData = latest.prices[store];
-                    if (storeData) {
-                        const effectivePrice = storeData.promo || storeData.regular;
-                        storePrices[store] = effectivePrice;
-                        if (effectivePrice) allPrices.push(effectivePrice);
-                    }
-                });
-
-                const currentLow = allPrices.length > 0 ? Math.min(...allPrices) : 0;
-
-                // Find best store
-                let bestStore = '';
-                stores.forEach(store => {
-                    if (storePrices[store] === currentLow) {
-                        bestStore = store;
-                    }
-                });
-
-                // Get historical lowest (all-time low)
-                let historicalPrices = [];
-                data.forEach(entry => {
-                    stores.forEach(store => {
-                        const storeData = entry.prices[store];
+                    productStoresList.forEach(store => {
+                        const storeData = latest.prices[store];
                         if (storeData) {
                             const effectivePrice = storeData.promo || storeData.regular;
-                            if (effectivePrice) historicalPrices.push(effectivePrice);
+                            storePrices[store] = effectivePrice;
+                            if (effectivePrice) allPrices.push(effectivePrice);
                         }
                     });
-                });
-                const histLow = historicalPrices.length > 0 ? Math.min(...historicalPrices) : 0;
 
-                // Check if current low is all-time low
-                const isAllTimeLow = currentLow === histLow;
+                    const currentLow = allPrices.length > 0 ? Math.min(...allPrices) : 0;
 
-                bodyHtml += '<tr>';
-                bodyHtml += `<td style="text-align: left;"><strong>${productName}</strong></td>`;
+                    // Find best store
+                    let bestStore = '';
+                    productStoresList.forEach(store => {
+                        if (storePrices[store] === currentLow) {
+                            bestStore = store;
+                        }
+                    });
 
-                stores.forEach(store => {
-                    const price = storePrices[store];
-                    let cellClass = '';
-                    if (price === currentLow) {
-                        cellClass = isAllTimeLow ? 'all-time-low' : 'lowest-price';
-                    }
-                    bodyHtml += `<td class="${cellClass}">${price ? 'RM ' + price.toFixed(2) : '-'}</td>`;
-                });
+                    // Get historical lowest (all-time low)
+                    let historicalPrices = [];
+                    data.forEach(entry => {
+                        productStoresList.forEach(store => {
+                            const storeData = entry.prices[store];
+                            if (storeData) {
+                                const effectivePrice = storeData.promo || storeData.regular;
+                                if (effectivePrice) historicalPrices.push(effectivePrice);
+                            }
+                        });
+                    });
+                    const histLow = historicalPrices.length > 0 ? Math.min(...historicalPrices) : 0;
 
-                const currentLowClass = isAllTimeLow ? 'all-time-low' : 'lowest-price';
-                bodyHtml += `<td class="${currentLowClass}">RM ${currentLow.toFixed(2)}</td>`;
-                bodyHtml += `<td class="${currentLowClass}">${bestStore}</td>`;
-                bodyHtml += `<td style="background: #fff2cc; font-weight: bold;">RM ${histLow.toFixed(2)}</td>`;
-                bodyHtml += '</tr>';
+                    // Check if current low is all-time low
+                    const isAllTimeLow = currentLow === histLow;
+
+                    html += `
+                        <table class="price-table">
+                            <thead>
+                                <tr>
+                                    ${productStoresList.map(store => `<th>${store}</th>`).join('')}
+                                    <th>Current Low</th>
+                                    <th>Best Store</th>
+                                    <th>Hist. Low</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    ${productStoresList.map(store => {
+                                        const price = storePrices[store];
+                                        let cellClass = '';
+                                        if (price === currentLow) {
+                                            cellClass = isAllTimeLow ? 'all-time-low' : 'lowest-price';
+                                        }
+                                        return `<td class="${cellClass}">${price ? 'RM ' + price.toFixed(2) : '-'}</td>`;
+                                    }).join('')}
+                                    <td class="${isAllTimeLow ? 'all-time-low' : 'lowest-price'}">RM ${currentLow.toFixed(2)}</td>
+                                    <td class="${isAllTimeLow ? 'all-time-low' : 'lowest-price'}">${bestStore}</td>
+                                    <td style="background: #fff2cc; font-weight: bold;">RM ${histLow.toFixed(2)}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+                html += '</div>';
             });
 
-            bodyHtml += '</tbody>';
-            table.innerHTML = headerHtml + bodyHtml;
+            container.innerHTML = html;
         }
 
         // Export data
@@ -1569,7 +1730,8 @@
             const exportObj = {
                 priceData: priceData,
                 customProducts: customProducts,
-                customStores: customStores
+                customStores: customStores,
+                productStores: productStores
             };
             const dataStr = JSON.stringify(exportObj, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
@@ -1592,10 +1754,11 @@
                     if (confirm('导入数据将覆盖现有数据，确定继续吗？')) {
                         // Support both old and new format
                         if (imported.priceData && imported.customProducts !== undefined) {
-                            // New format with custom products and stores
+                            // New format with custom products, stores, and product stores
                             priceData = imported.priceData;
                             customProducts = imported.customProducts || {};
                             customStores = imported.customStores || [];
+                            productStores = imported.productStores || {};
                         } else {
                             // Old format (just price data)
                             priceData = imported;
@@ -1603,6 +1766,7 @@
                         saveData();
                         saveCustomProducts();
                         saveCustomStores();
+                        saveProductStores();
                         alert('数据导入成功！');
                         location.reload();
                     }
@@ -1615,11 +1779,12 @@
 
         // Clear all data
         function clearAllData() {
-            if (confirm('警告：这将删除所有价格记录、自定义产品和自定义商店！确定要继续吗？')) {
+            if (confirm('警告：这将删除所有价格记录、自定义产品、自定义商店和产品配置！确定要继续吗？')) {
                 if (confirm('再次确认：所有数据将被永久删除，无法恢复！')) {
                     localStorage.removeItem('ceravePriceData');
                     localStorage.removeItem('customProducts');
                     localStorage.removeItem('customStores');
+                    localStorage.removeItem('productStores');
                     location.reload();
                 }
             }
@@ -1635,10 +1800,11 @@
                 createProductPage(key);
             });
 
-            // Update summary, product list, and store list
+            // Update summary, product list, store list, and product stores config
             updateSummaryTable();
             updateProductList();
             updateStoreList();
+            updateProductStoresConfig();
         }
 
         // Initialize on load
