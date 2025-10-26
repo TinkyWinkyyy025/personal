@@ -2958,18 +2958,41 @@
             const container = document.getElementById('summaryTableContainer');
             let html = '';
 
+            // Group products by category
+            const productsByCategory = {};
+            const uncategorized = [];
+
             Object.keys(products).forEach(key => {
+                const categoryKey = productCategories[key];
+                if (categoryKey && categories[categoryKey]) {
+                    if (!productsByCategory[categoryKey]) {
+                        productsByCategory[categoryKey] = [];
+                    }
+                    productsByCategory[categoryKey].push(key);
+                } else {
+                    uncategorized.push(key);
+                }
+            });
+
+            // Helper function to render product summary
+            const renderProduct = (key) => {
                 const productName = products[key];
                 const data = priceData[key] || [];
                 const productStoresList = productStores[key] || [];
+                const brand = productBrands[key] || '';
+                const subcategory = productSubcategories[key] || '';
 
-                html += `
-                    <div style="margin-bottom: 40px;">
-                        <h4 style="color: #667eea; margin-bottom: 15px;">${productName}</h4>
+                let productHtml = `
+                    <div style="margin-bottom: 35px; padding-left: 10px;">
+                        <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <h4 style="color: #667eea; margin: 0;">${productName}</h4>
+                            ${brand ? `<span class="product-badge" style="background: #2196f3; font-size: 12px;">🏷️ ${brand}</span>` : ''}
+                            ${subcategory ? `<span class="product-badge" style="background: #4caf50; font-size: 12px;">🔖 ${subcategory}</span>` : ''}
+                        </div>
                 `;
 
                 if (data.length === 0 || productStoresList.length === 0) {
-                    html += `
+                    productHtml += `
                         <p style="color: #6c757d; font-style: italic;">
                             ${data.length === 0 ? '暂无价格数据' : '未配置商店'}
                         </p>
@@ -3015,7 +3038,7 @@
                     // Check if current low is all-time low
                     const isAllTimeLow = currentLow === histLow;
 
-                    html += `
+                    productHtml += `
                         <table class="price-table">
                             <thead>
                                 <tr>
@@ -3044,8 +3067,60 @@
                     `;
                 }
 
-                html += '</div>';
+                productHtml += '</div>';
+                return productHtml;
+            };
+
+            // Render categories with collapsible sections
+            Object.keys(categories).forEach((categoryKey, index) => {
+                const categoryName = categories[categoryKey];
+                const categoryProducts = productsByCategory[categoryKey] || [];
+
+                if (categoryProducts.length === 0) return; // Skip empty categories
+
+                html += `
+                    <div class="collapsible-section" style="margin-bottom: 20px;">
+                        <div class="collapsible-header active" onclick="toggleCollapsible(this)">
+                            <h3 style="margin: 0; color: #667eea;">📁 ${categoryName} (${categoryProducts.length}个产品)</h3>
+                            <span class="collapsible-toggle">▼</span>
+                        </div>
+                        <div class="collapsible-content active">
+                            <div class="collapsible-body">
+                `;
+
+                categoryProducts.forEach(key => {
+                    html += renderProduct(key);
+                });
+
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
+
+            // Render uncategorized products
+            if (uncategorized.length > 0) {
+                html += `
+                    <div class="collapsible-section" style="margin-bottom: 20px;">
+                        <div class="collapsible-header active" onclick="toggleCollapsible(this)">
+                            <h3 style="margin: 0; color: #999;">📦 未分类产品 (${uncategorized.length}个产品)</h3>
+                            <span class="collapsible-toggle">▼</span>
+                        </div>
+                        <div class="collapsible-content active">
+                            <div class="collapsible-body">
+                `;
+
+                uncategorized.forEach(key => {
+                    html += renderProduct(key);
+                });
+
+                html += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
 
             container.innerHTML = html;
         }
