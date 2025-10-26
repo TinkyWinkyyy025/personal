@@ -1117,446 +1117,130 @@
 
         <!-- Manage Products Tab -->
         <div id="manage-products" class="tab-content">
-            <!-- Layout Preview Banner -->
-            <div class="preview-banner">
-                <h2>🎨 选择你喜欢的布局方案</h2>
-                <p>下方展示了4种不同的管理页面布局，请选择最适合你的方案</p>
-            </div>
+            <h3 style="color: #667eea; margin-bottom: 20px;">⭐ 产品管理 - Layout 4: 混合优化方案</h3>
 
-            <!-- Sub Tabs for Layout Options -->
-            <div class="sub-tabs">
-                <button class="sub-tab active" onclick="switchSubTab('layout1')">方案1: 折叠式</button>
-                <button class="sub-tab" onclick="switchSubTab('layout2')">方案2: 子标签页</button>
-                <button class="sub-tab" onclick="switchSubTab('layout3')">方案3: 表格+弹窗</button>
-                <button class="sub-tab" onclick="switchSubTab('layout4')">方案4: 混合优化</button>
-            </div>
-
-            <!-- Layout 1: Collapsible -->
-            <div id="layout1" class="sub-content active">
-                <h3 style="color: #667eea; margin-bottom: 20px;">📁 方案1: 折叠式布局</h3>
-                <p style="margin-bottom: 20px; color: #6c757d;">
-                    <strong>特点：</strong>所有区块默认折叠，点击标题展开。节省垂直空间，适合产品和商店数量较多的情况。
-                </p>
-
-                <!-- Demo Collapsible Sections -->
-                <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                        <h4>📦 产品管理 (7个产品)</h4>
-                        <span class="collapsible-toggle">▼</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <div class="collapsible-body">
-                            <input type="text" class="search-box" placeholder="🔍 搜索产品...">
-                            <div class="product-list">
-                                <div class="product-item default">
-                                    <div>
-                                        <strong>CeraVe Hydrating Cleanser 88ml</strong>
-                                        <span class="product-badge">默认</span>
-                                        <span class="product-badge" style="background: #ff9800;">护肤</span>
-                                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">
-                                            ID: hydrating-88 | 记录数: 12
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="product-item">
-                                    <div>
-                                        <strong>iPhone 13 Pro</strong>
-                                        <span class="product-badge" style="background: #28a745;">自定义</span>
-                                        <span class="product-badge" style="background: #ff9800;">电子产品</span>
-                                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">
-                                            ID: iphone-13pro | 记录数: 5
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <button class="btn-delete">删除</button>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- Collapsible Section 1: Add New Product -->
+            <div class="collapsible-section">
+                <div class="collapsible-header active" onclick="toggleCollapsible(this)">
+                    <h4>➕ 添加新产品</h4>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content active">
+                    <div class="collapsible-body">
+                        <div class="add-product-form">
+                            <input type="text" id="newProductKey" placeholder="产品ID (例如: phone-13pro)" maxlength="50">
+                            <input type="text" id="newProductName" placeholder="产品名称 (例如: iPhone 13 Pro)" maxlength="100">
+                            <select id="newProductCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                                <option value="">选择品类...</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                            <button class="btn btn-success" onclick="addNewProduct()">添加产品</button>
+                        </div>
+                        <div class="tip-box">
+                            <strong>💡 提示：</strong><br>
+                            • 产品ID：用英文和数字，不要有空格 (例如: phone-13pro, book-cooking-101)<br>
+                            • 产品名称：可以使用中文，这是显示在标签页的名称<br>
+                            • 品类：选择产品所属的品类，用于分组管理<br>
+                            • 默认产品不能删除，但你可以添加自定义产品
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                        <h4>🏪 商店管理 (4个商店)</h4>
-                        <span class="collapsible-toggle">▼</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <div class="collapsible-body">
-                            <p style="color: #6c757d;">商店列表内容...</p>
+            <!-- Collapsible Section 2: Product List -->
+            <div class="collapsible-section">
+                <div class="collapsible-header active" onclick="toggleCollapsible(this)">
+                    <h4 id="productListHeader">📦 产品列表</h4>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content active">
+                    <div class="collapsible-body">
+                        <input type="text" id="productSearchBox" class="search-box" placeholder="🔍 搜索产品名称或ID..." oninput="filterProductTable()">
+                        <div id="productTableContainer">
+                            <!-- Will be populated by updateProductTable() -->
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                        <h4>🏷️ 品类管理 (4个品类)</h4>
-                        <span class="collapsible-toggle">▼</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <div class="collapsible-body">
-                            <p style="color: #6c757d;">品类列表内容...</p>
+            <!-- Collapsible Section 3: Add New Store -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <h4>🏪 添加新商店</h4>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="add-product-form">
+                            <input type="text" id="newStoreName" placeholder="商店名称 (例如: Sephora)" maxlength="50">
+                            <button class="btn btn-success" onclick="addNewStore()">添加商店</button>
+                        </div>
+                        <div class="tip-box">
+                            <strong>💡 提示：</strong><br>
+                            • 商店名称可以是任何零售商或线上平台<br>
+                            • 添加后可以在产品商店配置中为每个产品选择显示此商店<br>
+                            • 默认商店不能删除
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                        <h4>🔗 产品商店配置</h4>
-                        <span class="collapsible-toggle">▼</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <div class="collapsible-body">
-                            <p style="color: #6c757d;">产品商店配置内容...</p>
+            <!-- Collapsible Section 4: Store List -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <h4 id="storeListHeader">🏪 商店列表</h4>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <input type="text" id="storeSearchBox" class="search-box" placeholder="🔍 搜索商店..." oninput="filterStoreTable()">
+                        <div id="storeTableContainer">
+                            <!-- Will be populated by updateStoreTable() -->
                         </div>
                     </div>
                 </div>
-
-                <button class="confirm-button" onclick="confirmLayout('layout1')">
-                    ✅ 选择方案1
-                </button>
             </div>
 
-            <!-- Layout 2: Sub Tabs -->
-            <div id="layout2" class="sub-content">
-                <h3 style="color: #667eea; margin-bottom: 20px;">📑 方案2: 子标签页布局</h3>
-                <p style="margin-bottom: 20px; color: #6c757d;">
-                    <strong>特点：</strong>在"管理产品"内再分4个子标签，每次只显示一个区域的内容。界面更清爽，但需要切换标签。
-                </p>
-
-                <div class="sub-tabs" style="margin-bottom: 30px;">
-                    <button class="sub-tab" style="background: #e9ecef;">📦 产品</button>
-                    <button class="sub-tab">🏪 商店</button>
-                    <button class="sub-tab">🏷️ 品类</button>
-                    <button class="sub-tab">🔗 配置</button>
+            <!-- Collapsible Section 5: Add New Category -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <h4>🏷️ 添加新品类</h4>
+                    <span class="collapsible-toggle">▼</span>
                 </div>
-
-                <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; min-height: 300px;">
-                    <h4 style="color: #667eea;">📦 产品管理</h4>
-                    <p style="color: #6c757d; margin-top: 10px;">
-                        当前显示产品管理内容。点击其他标签可切换到商店管理、品类管理或配置页面。
-                    </p>
-                    <div style="margin-top: 20px;">
-                        <input type="text" class="search-box" placeholder="🔍 搜索产品...">
-                        <div class="product-list">
-                            <div class="product-item default">
-                                <div>
-                                    <strong>CeraVe Hydrating Cleanser 88ml</strong>
-                                    <span class="product-badge">默认</span>
-                                </div>
-                            </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="add-product-form">
+                            <input type="text" id="newCategoryKey" placeholder="品类ID (例如: electronics, books)" maxlength="50">
+                            <input type="text" id="newCategoryName" placeholder="品类名称 (例如: 电子产品, 书籍)" maxlength="100">
+                            <button class="btn btn-success" onclick="addNewCategory()">添加品类</button>
+                        </div>
+                        <div class="tip-box">
+                            <strong>💡 提示：</strong><br>
+                            • 品类ID：用英文和数字，不要有空格 (例如: electronics, books, food)<br>
+                            • 品类名称：可以使用中文，这是显示在分组中的名称<br>
+                            • 默认品类（护肤、美妆、衣服、配饰）不能删除<br>
+                            • 可以添加自定义品类来管理不同类型的产品（如：电子产品、书籍、食品等）
                         </div>
                     </div>
                 </div>
-
-                <button class="confirm-button" onclick="confirmLayout('layout2')">
-                    ✅ 选择方案2
-                </button>
             </div>
 
-            <!-- Layout 3: Table + Modal -->
-            <div id="layout3" class="sub-content">
-                <h3 style="color: #667eea; margin-bottom: 20px;">📊 方案3: 紧凑表格 + 弹窗编辑</h3>
-                <p style="margin-bottom: 20px; color: #6c757d;">
-                    <strong>特点：</strong>用紧凑的表格显示所有内容，点击"配置"按钮弹出模态框进行编辑。最节省空间的方案。
-                </p>
-
-                <h4 style="color: #667eea; margin-top: 30px;">📦 产品列表</h4>
-                <input type="text" class="search-box" placeholder="🔍 搜索产品...">
-                <table class="compact-table">
-                    <thead>
-                        <tr>
-                            <th>产品名称</th>
-                            <th>品类</th>
-                            <th>商店数</th>
-                            <th>记录数</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>CeraVe Hydrating Cleanser 88ml</strong></td>
-                            <td><span class="product-badge" style="background: #ff9800;">护肤</span></td>
-                            <td>4</td>
-                            <td>12</td>
-                            <td>
-                                <button class="btn-secondary btn-small" onclick="openModal()">配置商店</button>
-                                <button class="btn-delete btn-small">删除</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>iPhone 13 Pro</strong></td>
-                            <td><span class="product-badge" style="background: #ff9800;">电子产品</span></td>
-                            <td>2</td>
-                            <td>5</td>
-                            <td>
-                                <button class="btn-secondary btn-small" onclick="openModal()">配置商店</button>
-                                <button class="btn-delete btn-small">删除</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h4 style="color: #667eea; margin-top: 30px;">🏪 商店列表</h4>
-                <table class="compact-table">
-                    <thead>
-                        <tr>
-                            <th>商店名称</th>
-                            <th>类型</th>
-                            <th>记录数</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Guardian</strong></td>
-                            <td><span class="product-badge">默认</span></td>
-                            <td>45</td>
-                            <td>-</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <button class="confirm-button" onclick="confirmLayout('layout3')">
-                    ✅ 选择方案3
-                </button>
-
-                <!-- Demo Modal -->
-                <div id="demoModal" class="modal">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>配置商店 - CeraVe Hydrating Cleanser</h3>
-                            <button class="modal-close" onclick="closeModal()">&times;</button>
-                        </div>
-                        <div class="store-checkbox-list">
-                            <div class="store-checkbox-item">
-                                <input type="checkbox" checked id="demo-cb1">
-                                <label for="demo-cb1">Guardian</label>
-                            </div>
-                            <div class="store-checkbox-item">
-                                <input type="checkbox" checked id="demo-cb2">
-                                <label for="demo-cb2">Watsons</label>
-                            </div>
-                            <div class="store-checkbox-item">
-                                <input type="checkbox" id="demo-cb3">
-                                <label for="demo-cb3">Shopee</label>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" style="margin-top: 20px; width: 100%;" onclick="closeModal()">保存</button>
-                    </div>
+            <!-- Collapsible Section 6: Category List -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <h4 id="categoryListHeader">🏷️ 品类列表</h4>
+                    <span class="collapsible-toggle">▼</span>
                 </div>
-            </div>
-
-            <!-- Layout 4: Hybrid Optimized -->
-            <div id="layout4" class="sub-content">
-                <h3 style="color: #667eea; margin-bottom: 20px;">⭐ 方案4: 混合优化方案（推荐）</h3>
-                <p style="margin-bottom: 20px; color: #6c757d;">
-                    <strong>特点：</strong>折叠式布局 + 搜索功能 + 紧凑表格 + 内联编辑。结合了所有方案的优点，最实用的选择。
-                </p>
-
-                <!-- Collapsible with Search -->
-                <div class="collapsible-section">
-                    <div class="collapsible-header active" onclick="toggleCollapsible(this)">
-                        <h4>📦 产品管理 (7个产品)</h4>
-                        <span class="collapsible-toggle">▼</span>
-                    </div>
-                    <div class="collapsible-content active">
-                        <div class="collapsible-body">
-                            <input type="text" class="search-box" placeholder="🔍 搜索产品名称或ID...">
-                            <table class="compact-table">
-                                <thead>
-                                    <tr>
-                                        <th>产品名称</th>
-                                        <th>品类</th>
-                                        <th>商店</th>
-                                        <th>记录</th>
-                                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>CeraVe Hydrating Cleanser 88ml</strong></td>
-                                        <td><span class="product-badge" style="background: #ff9800; font-size: 11px;">护肤</span></td>
-                                        <td style="text-align: center;">4</td>
-                                        <td style="text-align: center;">12</td>
-                                        <td>
-                                            <button class="btn-secondary btn-small" onclick="toggleInlineConfig(this)">编辑</button>
-                                            <button class="btn-delete btn-small">删除</button>
-                                        </td>
-                                    </tr>
-                                    <tr style="display: none;" class="inline-config-row">
-                                        <td colspan="5">
-                                            <div class="inline-config">
-                                                <strong>选择商店：</strong>
-                                                <div class="store-checkbox-list">
-                                                    <div class="store-checkbox-item">
-                                                        <input type="checkbox" checked>
-                                                        <label>Guardian</label>
-                                                    </div>
-                                                    <div class="store-checkbox-item">
-                                                        <input type="checkbox" checked>
-                                                        <label>Watsons</label>
-                                                    </div>
-                                                    <div class="store-checkbox-item">
-                                                        <input type="checkbox">
-                                                        <label>Caring</label>
-                                                    </div>
-                                                </div>
-                                                <button class="btn btn-primary btn-small">保存</button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>iPhone 13 Pro</strong></td>
-                                        <td><span class="product-badge" style="background: #ff9800; font-size: 11px;">电子产品</span></td>
-                                        <td style="text-align: center;">2</td>
-                                        <td style="text-align: center;">5</td>
-                                        <td>
-                                            <button class="btn-secondary btn-small" onclick="toggleInlineConfig(this)">编辑</button>
-                                            <button class="btn-delete btn-small">删除</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <input type="text" id="categorySearchBox" class="search-box" placeholder="🔍 搜索品类..." oninput="filterCategoryTable()">
+                        <div id="categoryTableContainer">
+                            <!-- Will be populated by updateCategoryTable() -->
                         </div>
                     </div>
                 </div>
-
-                <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                        <h4>🏪 商店管理 (4个商店)</h4>
-                        <span class="collapsible-toggle">▼</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <div class="collapsible-body">
-                            <table class="compact-table">
-                                <thead>
-                                    <tr>
-                                        <th>商店名称</th>
-                                        <th>类型</th>
-                                        <th>记录数</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><strong>Guardian</strong></td>
-                                        <td><span class="product-badge">默认</span></td>
-                                        <td>45</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                        <h4>🏷️ 品类管理 (4个品类)</h4>
-                        <span class="collapsible-toggle">▼</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <div class="collapsible-body">
-                            <p style="color: #6c757d;">品类列表（紧凑表格显示）...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="confirm-button" onclick="confirmLayout('layout4')">
-                    ⭐ 选择方案4（推荐）
-                </button>
-            </div>
-
-            <div class="warning-box" style="margin-top: 30px;">
-                <strong>💡 提示：</strong><br>
-                • 选择方案后，我会将真实的产品管理页面替换成你选择的布局<br>
-                • 如果你有其他想法或需要调整，请告诉我<br>
-                • 选定布局后，我还会实现"子品类"功能（如：护肤 → toner, serum, cream等）
-            </div>
-
-            <!-- Original content will be hidden for now -->
-            <div id="originalManageContent" style="display: none;">
-            <div class="product-management">
-                <h3>➕ 添加新产品</h3>
-                <div class="add-product-form">
-                    <input type="text" id="newProductKey" placeholder="产品ID (例如: phone-13pro)" maxlength="50">
-                    <input type="text" id="newProductName" placeholder="产品名称 (例如: iPhone 13 Pro)" maxlength="100">
-                    <select id="newProductCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                        <option value="">选择品类...</option>
-                        <!-- Will be populated by JavaScript -->
-                    </select>
-                    <button class="btn btn-success" onclick="addNewProduct()">添加产品</button>
-                </div>
-                <div class="tip-box">
-                    <strong>💡 提示：</strong><br>
-                    • 产品ID：用英文和数字，不要有空格 (例如: phone-13pro, book-cooking-101)<br>
-                    • 产品名称：可以使用中文，这是显示在标签页的名称<br>
-                    • 品类：选择产品所属的品类，用于分组管理<br>
-                    • 默认产品不能删除，但你可以添加自定义产品
-                </div>
-            </div>
-
-            <h3 style="color: #667eea; margin-bottom: 20px;">📦 产品列表</h3>
-            <div class="product-list" id="productList">
-                <!-- Will be populated by JavaScript -->
-            </div>
-
-            <div class="product-management" style="margin-top: 30px; background: #fff3e0; border-color: #ff9800;">
-                <h3 style="color: #f57c00;">🏪 添加新商店</h3>
-                <div class="add-product-form">
-                    <input type="text" id="newStoreName" placeholder="商店名称 (例如: BigPharmacy, AEON)" maxlength="50">
-                    <button class="btn btn-success" onclick="addNewStore()">添加商店</button>
-                </div>
-                <div class="tip-box" style="background: #fff8e1; border-color: #ffc107;">
-                    <strong>💡 提示：</strong><br>
-                    • 商店名称：可以使用英文或中文 (例如: BigPharmacy, 万宁)<br>
-                    • 添加后，所有产品的价格输入表格都会增加这个商店的列<br>
-                    • 默认商店不能删除，但你可以添加和删除自定义商店
-                </div>
-            </div>
-
-            <h3 style="color: #667eea; margin-bottom: 20px;">🏪 商店列表</h3>
-            <div class="product-list" id="storeList">
-                <!-- Will be populated by JavaScript -->
-            </div>
-
-            <div class="product-management" style="margin-top: 30px; background: #f3e5f5; border-color: #9c27b0;">
-                <h3 style="color: #7b1fa2;">🏷️ 添加新品类</h3>
-                <div class="add-product-form">
-                    <input type="text" id="newCategoryKey" placeholder="品类ID (例如: electronics, books)" maxlength="50">
-                    <input type="text" id="newCategoryName" placeholder="品类名称 (例如: 电子产品, 书籍)" maxlength="100">
-                    <button class="btn btn-success" onclick="addNewCategory()">添加品类</button>
-                </div>
-                <div class="tip-box">
-                    <strong>💡 提示：</strong><br>
-                    • 品类ID：用英文和数字，不要有空格 (例如: electronics, books, food)<br>
-                    • 品类名称：可以使用中文，这是显示在分组中的名称<br>
-                    • 默认品类（护肤、美妆、衣服、配饰）不能删除<br>
-                    • 可以添加自定义品类来管理不同类型的产品（如：电子产品、书籍、食品等）
-                </div>
-            </div>
-
-            <h3 style="color: #667eea; margin-bottom: 20px;">🏷️ 品类列表</h3>
-            <div class="product-list" id="categoryList">
-                <!-- Will be populated by JavaScript -->
-            </div>
-
-            <div class="product-management" style="margin-top: 30px; background: #f3e5f5; border-color: #9c27b0;">
-                <h3 style="color: #7b1fa2;">🔗 产品商店配置</h3>
-                <div class="tip-box" style="background: #fce4ec; border-color: #e91e63;">
-                    <strong>💡 说明：</strong><br>
-                    • 为每个产品选择显示哪些商店<br>
-                    • 只有被选择的商店才会在产品的价格输入表格中显示<br>
-                    • 这样可以避免不必要的空列，让表格更清晰
-                </div>
-            </div>
-
-            <div id="productStoresConfig" style="margin-top: 20px;">
-                <!-- Will be populated by JavaScript -->
-            </div>
-            </div>
             </div>
         </div>
-
         <!-- Summary Tab -->
         <div id="summary" class="tab-content">
             <h3 style="color: #667eea; margin-bottom: 20px;">📊 所有产品价格总览</h3>
@@ -2191,9 +1875,12 @@
             document.getElementById('newProductName').value = '';
             document.getElementById('newProductCategory').value = '';
 
-            // Refresh the page to show new product
+            // Refresh necessary components
             alert('产品添加成功！');
-            initializeApp();
+            generateTabs();
+            createProductPage(key);
+            updateProductTable();
+            updateCategoryTable();
         }
 
         // Delete product
@@ -2249,6 +1936,257 @@
 
             listDiv.innerHTML = html;
         }
+
+        // Layout 4: Compact Table Display Functions
+
+        // Update product table with compact layout and inline editing
+        function updateProductTable() {
+            const container = document.getElementById('productTableContainer');
+            const header = document.getElementById('productListHeader');
+
+            if (!container) return;
+
+            const productCount = Object.keys(products).length;
+            header.textContent = `📦 产品列表 (${productCount}个产品)`;
+
+            let html = '<table class="compact-table"><thead><tr>';
+            html += '<th>产品名称</th>';
+            html += '<th>品类</th>';
+            html += '<th>商店</th>';
+            html += '<th>记录</th>';
+            html += '<th>操作</th>';
+            html += '</tr></thead><tbody id="productTableBody">';
+
+            Object.keys(products).forEach(key => {
+                const isDefault = defaultProducts[key] !== undefined;
+                const name = products[key];
+                const recordCount = priceData[key] ? priceData[key].length : 0;
+                const categoryKey = productCategories[key] || '';
+                const categoryName = categoryKey ? (categories[categoryKey] || categoryKey) : '未分类';
+                const storeCount = (productStores[key] || []).length;
+
+                html += `<tr id="product-row-${key}">`;
+                html += `<td><strong>${name}</strong> ${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}</td>`;
+                html += `<td><span class="product-badge" style="background: #ff9800; font-size: 11px;">${categoryName}</span></td>`;
+                html += `<td style="text-align: center;">${storeCount}</td>`;
+                html += `<td style="text-align: center;">${recordCount}</td>`;
+                html += `<td>`;
+                html += `<button class="btn-secondary btn-small" onclick="toggleProductStoreConfig('${key}')">编辑商店</button>`;
+                if (!isDefault) {
+                    html += `<button class="btn-delete btn-small" onclick="deleteProduct('${key}')">删除</button>`;
+                }
+                html += `</td></tr>`;
+
+                // Inline config row (hidden by default)
+                html += `<tr id="product-config-${key}" style="display: none;" class="inline-config-row">`;
+                html += `<td colspan="5"><div class="inline-config">`;
+                html += `<strong>选择商店：</strong>`;
+                html += `<div class="store-checkbox-list" id="stores-for-${key}">`;
+                stores.forEach(store => {
+                    const isChecked = (productStores[key] || []).includes(store);
+                    html += `<div class="store-checkbox-item">`;
+                    html += `<input type="checkbox" ${isChecked ? 'checked' : ''} id="store-${key}-${store.replace(/\s+/g, '-')}" onchange="updateProductStore('${key}', '${store}', this.checked)">`;
+                    html += `<label for="store-${key}-${store.replace(/\s+/g, '-')}">${store}</label>`;
+                    html += `</div>`;
+                });
+                html += `</div>`;
+                html += `<button class="btn btn-primary btn-small" onclick="toggleProductStoreConfig('${key}')">完成</button>`;
+                html += `</div></td></tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Toggle product store configuration inline edit
+        function toggleProductStoreConfig(productKey) {
+            const configRow = document.getElementById(`product-config-${productKey}`);
+            if (!configRow) return;
+
+            if (configRow.style.display === 'none') {
+                configRow.style.display = 'table-row';
+            } else {
+                configRow.style.display = 'none';
+            }
+        }
+
+        // Update product store selection
+        function updateProductStore(productKey, store, isChecked) {
+            if (!productStores[productKey]) {
+                productStores[productKey] = [];
+            }
+
+            if (isChecked) {
+                if (!productStores[productKey].includes(store)) {
+                    productStores[productKey].push(store);
+                }
+            } else {
+                productStores[productKey] = productStores[productKey].filter(s => s !== store);
+            }
+
+            saveProductStores();
+
+            // Update store count in the main row
+            const mainRow = document.getElementById(`product-row-${productKey}`);
+            if (mainRow) {
+                const storeCountCell = mainRow.cells[2];
+                storeCountCell.textContent = productStores[productKey].length;
+            }
+        }
+
+        // Filter product table based on search
+        function filterProductTable() {
+            const searchBox = document.getElementById('productSearchBox');
+            const tbody = document.getElementById('productTableBody');
+            if (!searchBox || !tbody) return;
+
+            const searchTerm = searchBox.value.toLowerCase();
+            const rows = tbody.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.classList.contains('inline-config-row')) continue;
+
+                const productName = row.cells[0]?.textContent.toLowerCase() || '';
+                if (productName.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Update store table with compact layout
+        function updateStoreTable() {
+            const container = document.getElementById('storeTableContainer');
+            const header = document.getElementById('storeListHeader');
+
+            if (!container) return;
+
+            const storeCount = stores.length;
+            header.textContent = `🏪 商店列表 (${storeCount}个商店)`;
+
+            let html = '<table class="compact-table"><thead><tr>';
+            html += '<th>商店名称</th>';
+            html += '<th>类型</th>';
+            html += '<th>使用数</th>';
+            html += '<th>操作</th>';
+            html += '</tr></thead><tbody id="storeTableBody">';
+
+            stores.forEach(store => {
+                const isDefault = defaultStores.includes(store);
+
+                // Count products using this store
+                let usageCount = 0;
+                Object.keys(productStores).forEach(productKey => {
+                    if ((productStores[productKey] || []).includes(store)) {
+                        usageCount++;
+                    }
+                });
+
+                html += '<tr>';
+                html += `<td><strong>${store}</strong></td>`;
+                html += `<td>${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}</td>`;
+                html += `<td style="text-align: center;">${usageCount}</td>`;
+                html += `<td>`;
+                if (!isDefault) {
+                    html += `<button class="btn-delete btn-small" onclick="deleteStore('${store}')">删除</button>`;
+                } else {
+                    html += '-';
+                }
+                html += `</td></tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Filter store table
+        function filterStoreTable() {
+            const searchBox = document.getElementById('storeSearchBox');
+            const tbody = document.getElementById('storeTableBody');
+            if (!searchBox || !tbody) return;
+
+            const searchTerm = searchBox.value.toLowerCase();
+            const rows = tbody.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const storeName = row.cells[0]?.textContent.toLowerCase() || '';
+                if (storeName.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Update category table with compact layout
+        function updateCategoryTable() {
+            const container = document.getElementById('categoryTableContainer');
+            const header = document.getElementById('categoryListHeader');
+
+            if (!container) return;
+
+            const categoryCount = Object.keys(categories).length;
+            header.textContent = `🏷️ 品类列表 (${categoryCount}个品类)`;
+
+            let html = '<table class="compact-table"><thead><tr>';
+            html += '<th>品类名称</th>';
+            html += '<th>类型</th>';
+            html += '<th>产品数</th>';
+            html += '<th>操作</th>';
+            html += '</tr></thead><tbody id="categoryTableBody">';
+
+            Object.keys(categories).forEach(key => {
+                const isDefault = defaultCategories[key] !== undefined;
+                const name = categories[key];
+
+                // Count products in this category
+                let productCount = 0;
+                Object.keys(productCategories).forEach(productKey => {
+                    if (productCategories[productKey] === key) {
+                        productCount++;
+                    }
+                });
+
+                html += '<tr>';
+                html += `<td><strong>${name}</strong><div style="font-size: 0.85em; color: #6c757d;">ID: ${key}</div></td>`;
+                html += `<td>${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}</td>`;
+                html += `<td style="text-align: center;">${productCount}</td>`;
+                html += `<td>`;
+                if (!isDefault) {
+                    html += `<button class="btn-delete btn-small" onclick="deleteCategory('${key}')">删除</button>`;
+                } else {
+                    html += '-';
+                }
+                html += `</td></tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Filter category table
+        function filterCategoryTable() {
+            const searchBox = document.getElementById('categorySearchBox');
+            const tbody = document.getElementById('categoryTableBody');
+            if (!searchBox || !tbody) return;
+
+            const searchTerm = searchBox.value.toLowerCase();
+            const rows = tbody.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const categoryName = row.cells[0]?.textContent.toLowerCase() || '';
+                if (categoryName.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
 
         // Generate product tabs dynamically grouped by category
         function generateTabs() {
@@ -2349,11 +2287,11 @@
             if (tabId === 'summary') {
                 updateSummaryTable();
             } else if (tabId === 'manage-products') {
-                updateProductList();
-                updateStoreList();
-                updateCategoryList();
+                // Layout 4: Update compact tables
                 updateCategoryDropdown();
-                updateProductStoresConfig();
+                updateProductTable();
+                updateStoreTable();
+                updateCategoryTable();
             } else if (tabId === 'tobuy') {
                 updateToBuyList();
             }
@@ -2988,11 +2926,10 @@
 
             // Update all lists and configs
             updateSummaryTable();
-            updateProductList();
-            updateStoreList();
-            updateCategoryList();
             updateCategoryDropdown();
-            updateProductStoresConfig();
+            updateProductTable();
+            updateStoreTable();
+            updateCategoryTable();
             updateToBuyList();
         }
 
