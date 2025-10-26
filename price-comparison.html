@@ -841,6 +841,16 @@
             <p>追踪不同店铺的产品价格，自动计算最低价和促销单价</p>
         </div>
 
+        <!-- Global Search -->
+        <div style="max-width: 800px; margin: 0 auto 20px auto; padding: 0 20px;">
+            <div style="position: relative;">
+                <input type="text" id="globalSearchBox" class="search-box" placeholder="🔍 全局搜索：输入品牌、品类、子品类或产品名称..." oninput="globalSearch()" style="margin: 0; padding-left: 45px; font-size: 16px; border: 2px solid #667eea;">
+                <div id="globalSearchResults" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #667eea; border-top: none; border-radius: 0 0 8px 8px; max-height: 400px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100;">
+                    <!-- Search results will be populated here -->
+                </div>
+            </div>
+        </div>
+
         <div class="tabs" id="tabsContainer">
             <button class="tab active" onclick="switchTab('guide')">📖 使用指南</button>
             <button class="tab" onclick="switchTab('calculator')">🧮 促销计算器</button>
@@ -1243,6 +1253,36 @@
                         <input type="text" id="categorySearchBox" class="search-box" placeholder="🔍 搜索品类..." oninput="filterCategoryTable()">
                         <div id="categoryTableContainer">
                             <!-- Will be populated by updateCategoryTable() -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsible Section 7: Subcategory Management -->
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <h4>🔖 子品类管理</h4>
+                    <span class="collapsible-toggle">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="add-product-form">
+                            <select id="subcategoryTargetCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                                <option value="">选择品类...</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                            <input type="text" id="newSubcategoryName" placeholder="子品类名称 (例如: Essence, Ampoule)" maxlength="50">
+                            <button class="btn btn-success" onclick="addSubcategory()">添加子品类</button>
+                        </div>
+                        <div class="tip-box">
+                            <strong>💡 提示：</strong><br>
+                            • 先选择要添加子品类的品类（如：护肤、美妆等）<br>
+                            • 然后输入新的子品类名称<br>
+                            • 每个品类可以有多个子品类<br>
+                            • 默认子品类不能删除，但可以添加自定义子品类
+                        </div>
+                        <div id="subcategoryListContainer" style="margin-top: 20px;">
+                            <!-- Will be populated by updateSubcategoryList() -->
                         </div>
                     </div>
                 </div>
@@ -1693,6 +1733,127 @@
             }
 
             subcategoryDropdown.innerHTML = html;
+        }
+
+        // Update subcategory target category dropdown
+        function updateSubcategoryTargetCategoryDropdown() {
+            const dropdown = document.getElementById('subcategoryTargetCategory');
+            if (!dropdown) return;
+
+            let html = '<option value="">选择品类...</option>';
+
+            Object.keys(categories).forEach(key => {
+                const name = categories[key];
+                html += `<option value="${key}">${name}</option>`;
+            });
+
+            dropdown.innerHTML = html;
+        }
+
+        // Add subcategory to a category
+        function addSubcategory() {
+            const categoryKey = document.getElementById('subcategoryTargetCategory').value;
+            const subcategoryName = document.getElementById('newSubcategoryName').value.trim();
+
+            if (!categoryKey) {
+                alert('请选择要添加子品类的品类！');
+                return;
+            }
+
+            if (!subcategoryName) {
+                alert('请输入子品类名称！');
+                return;
+            }
+
+            // Initialize subcategories array if not exists
+            if (!subcategories[categoryKey]) {
+                subcategories[categoryKey] = [];
+            }
+
+            // Check if subcategory already exists
+            if (subcategories[categoryKey].includes(subcategoryName)) {
+                alert('该子品类已存在！');
+                return;
+            }
+
+            // Add subcategory
+            subcategories[categoryKey].push(subcategoryName);
+            saveSubcategories();
+
+            // Clear form
+            document.getElementById('newSubcategoryName').value = '';
+
+            // Refresh list
+            updateSubcategoryList();
+            alert('子品类添加成功！');
+        }
+
+        // Delete subcategory
+        function deleteSubcategory(categoryKey, subcategoryName) {
+            // Check if it's a default subcategory
+            if (defaultSubcategories[categoryKey] && defaultSubcategories[categoryKey].includes(subcategoryName)) {
+                alert('默认子品类不能删除！');
+                return;
+            }
+
+            // Check if any products are using this subcategory
+            let productsUsingIt = [];
+            Object.keys(productSubcategories).forEach(productKey => {
+                if (productSubcategories[productKey] === subcategoryName && productCategories[productKey] === categoryKey) {
+                    productsUsingIt.push(products[productKey]);
+                }
+            });
+
+            if (productsUsingIt.length > 0) {
+                alert(`无法删除！有 ${productsUsingIt.length} 个产品正在使用此子品类：\n${productsUsingIt.join(', ')}`);
+                return;
+            }
+
+            if (confirm(`确定要删除子品类 "${subcategoryName}" 吗？`)) {
+                subcategories[categoryKey] = subcategories[categoryKey].filter(s => s !== subcategoryName);
+                saveSubcategories();
+                updateSubcategoryList();
+            }
+        }
+
+        // Update subcategory list display
+        function updateSubcategoryList() {
+            const container = document.getElementById('subcategoryListContainer');
+            if (!container) return;
+
+            let html = '';
+
+            Object.keys(categories).forEach(categoryKey => {
+                const categoryName = categories[categoryKey];
+                const subcatList = subcategories[categoryKey] || [];
+
+                if (subcatList.length === 0) return;
+
+                html += `<div style="margin-bottom: 20px;">`;
+                html += `<h4 style="color: #667eea; margin-bottom: 10px;">📁 ${categoryName}</h4>`;
+                html += `<div style="display: flex; flex-wrap: wrap; gap: 10px;">`;
+
+                subcatList.forEach(subcat => {
+                    const isDefault = defaultSubcategories[categoryKey] && defaultSubcategories[categoryKey].includes(subcat);
+
+                    html += `<div style="display: inline-flex; align-items: center; padding: 8px 12px; background: ${isDefault ? '#f8f9fa' : '#e3f2fd'}; border-radius: 5px; border: 1px solid ${isDefault ? '#dee2e6' : '#90caf9'};">`;
+                    html += `<span style="margin-right: 8px;">${subcat}</span>`;
+                    if (isDefault) {
+                        html += `<span class="product-badge" style="font-size: 10px; padding: 2px 6px;">默认</span>`;
+                    } else {
+                        html += `<button class="btn-delete" style="padding: 2px 8px; font-size: 11px; margin: 0;" onclick="deleteSubcategory('${categoryKey}', '${subcat}')">删除</button>`;
+                    }
+                    html += `</div>`;
+                });
+
+                html += `</div></div>`;
+            });
+
+            if (html === '') {
+                html = '<p style="color: #6c757d; text-align: center; padding: 20px;">暂无子品类</p>';
+            }
+
+            container.innerHTML = html;
         }
 
         // Add new store
@@ -2340,9 +2501,11 @@
             } else if (tabId === 'manage-products') {
                 // Layout 4: Update compact tables
                 updateCategoryDropdown();
+                updateSubcategoryTargetCategoryDropdown();
                 updateProductTable();
                 updateStoreTable();
                 updateCategoryTable();
+                updateSubcategoryList();
             } else if (tabId === 'tobuy') {
                 updateToBuyList();
             }
@@ -2353,9 +2516,20 @@
             const productName = products[productKey];
             const contentDiv = document.getElementById(`content-${productKey}`);
             const productStoresList = productStores[productKey] || [];
+            const brand = productBrands[productKey] || '';
+            const categoryKey = productCategories[productKey] || '';
+            const categoryName = categoryKey ? (categories[categoryKey] || '') : '';
+            const subcategory = productSubcategories[productKey] || '';
 
             contentDiv.innerHTML = `
-                <h3 style="color: #667eea; margin-bottom: 20px;">${productName}</h3>
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">${productName}</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        ${brand ? `<span class="product-badge" style="background: #2196f3;">🏷️ ${brand}</span>` : ''}
+                        ${categoryName ? `<span class="product-badge" style="background: #ff9800;">📁 ${categoryName}</span>` : ''}
+                        ${subcategory ? `<span class="product-badge" style="background: #4caf50;">🔖 ${subcategory}</span>` : ''}
+                    </div>
+                </div>
 
                 <div class="tip-box" style="background: #fff9e6; border-color: #ffc107;">
                     <strong>🧮 需要计算促销价格？</strong><br>
@@ -2978,11 +3152,105 @@
             // Update all lists and configs
             updateSummaryTable();
             updateCategoryDropdown();
+            updateSubcategoryTargetCategoryDropdown();
             updateProductTable();
             updateStoreTable();
             updateCategoryTable();
+            updateSubcategoryList();
             updateToBuyList();
         }
+
+        // Global Search Function
+        function globalSearch() {
+            const searchBox = document.getElementById('globalSearchBox');
+            const resultsDiv = document.getElementById('globalSearchResults');
+
+            if (!searchBox || !resultsDiv) return;
+
+            const searchTerm = searchBox.value.trim().toLowerCase();
+
+            if (searchTerm.length === 0) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            // Search through all products
+            let results = [];
+
+            Object.keys(products).forEach(key => {
+                const productName = products[key].toLowerCase();
+                const brand = (productBrands[key] || '').toLowerCase();
+                const categoryKey = productCategories[key] || '';
+                const categoryName = (categories[categoryKey] || '').toLowerCase();
+                const subcategory = (productSubcategories[key] || '').toLowerCase();
+
+                // Check if search term matches any field
+                if (productName.includes(searchTerm) ||
+                    brand.includes(searchTerm) ||
+                    categoryName.includes(searchTerm) ||
+                    subcategory.includes(searchTerm) ||
+                    key.includes(searchTerm)) {
+
+                    results.push({
+                        key: key,
+                        name: products[key],
+                        brand: productBrands[key] || '',
+                        category: categories[categoryKey] || '',
+                        subcategory: productSubcategories[key] || ''
+                    });
+                }
+            });
+
+            // Display results
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #6c757d;">没有找到匹配的产品</div>';
+                resultsDiv.style.display = 'block';
+            } else {
+                let html = '';
+                results.forEach(result => {
+                    html += `
+                        <div style="padding: 12px 20px; border-bottom: 1px solid #e9ecef; cursor: pointer; transition: background 0.2s;"
+                             onmouseover="this.style.background='#f8f9fa'"
+                             onmouseout="this.style.background='white'"
+                             onclick="navigateToProduct('${result.key}')">
+                            <div style="font-weight: bold; color: #667eea; margin-bottom: 5px;">${result.name}</div>
+                            <div style="font-size: 13px; color: #6c757d; display: flex; gap: 10px; flex-wrap: wrap;">
+                                ${result.brand ? `<span>🏷️ ${result.brand}</span>` : ''}
+                                ${result.category ? `<span>📁 ${result.category}</span>` : ''}
+                                ${result.subcategory ? `<span>🔖 ${result.subcategory}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                resultsDiv.innerHTML = html;
+                resultsDiv.style.display = 'block';
+            }
+        }
+
+        // Navigate to product page
+        function navigateToProduct(productKey) {
+            // Hide search results
+            const resultsDiv = document.getElementById('globalSearchResults');
+            const searchBox = document.getElementById('globalSearchBox');
+            if (resultsDiv) resultsDiv.style.display = 'none';
+            if (searchBox) searchBox.value = '';
+
+            // Switch to the product tab
+            switchTab(productKey);
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Close search results when clicking outside
+        document.addEventListener('click', function(event) {
+            const searchBox = document.getElementById('globalSearchBox');
+            const resultsDiv = document.getElementById('globalSearchResults');
+
+            if (searchBox && resultsDiv && !searchBox.contains(event.target) && !resultsDiv.contains(event.target)) {
+                resultsDiv.style.display = 'none';
+            }
+        });
 
         // Demo Functions for Layout Preview
         function switchSubTab(layoutId) {
