@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CeraVe & Garnier Price Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Promo Calculator */
+        .promo-calculator {
+            background: #fff9e6;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .promo-calculator h3 {
+            color: #f57c00;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .calc-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .calc-item h4 {
+            color: #f57c00;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .calc-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .calc-input input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .calc-result {
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #2e7d32;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* Price Entry Form */
+        .price-entry {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .price-entry h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 150px repeat(4, 1fr) repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .form-row.header {
+            font-weight: bold;
+            color: #495057;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .form-row input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-row input[type="date"] {
+            text-align: center;
+        }
+
+        .promo-input {
+            background: #fff9e6 !important;
+            border: 2px solid #ffc107 !important;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Price History Table */
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .price-table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        .price-table th,
+        .price-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        .price-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .price-table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        .lowest-price {
+            background: #c6efce !important;
+            color: #006100;
+            font-weight: bold;
+        }
+
+        .all-time-low {
+            background: #ffd700 !important;
+            color: #b8860b;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .all-time-low::after {
+            content: "🏆";
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 12px;
+        }
+
+        .promo-price {
+            background: #ffe699 !important;
+            color: #e26b0a;
+            font-weight: bold;
+        }
+
+        .trend-up {
+            color: #d32f2f;
+        }
+
+        .trend-down {
+            color: #388e3c;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .summary-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .summary-card h4 {
+            color: #495057;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .summary-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .summary-card .subtext {
+            color: #6c757d;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        /* Guide Page */
+        .guide-content {
+            line-height: 1.8;
+        }
+
+        .guide-content h3 {
+            color: #667eea;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+        }
+
+        .guide-content h4 {
+            color: #495057;
+            margin: 20px 0 10px 0;
+        }
+
+        .guide-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+
+        .guide-table th,
+        .guide-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+
+        .guide-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .guide-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .tip-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        /* Delete button */
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        /* Export buttons */
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Product Management */
+        .product-management {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .product-management h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .add-product-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-product-form input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .product-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-item.default {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+
+        .product-badge {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .price-table {
+                font-size: 12px;
+            }
+
+            .price-table th,
+            .price-table td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧴 CeraVe & Garnier Price Tracker</h1>
+            <p>追踪不同店铺的产品价格，自动计算最低价和促销单价</p>
+        </div>
+
+        <div class="tabs" id="tabsContainer">
+            <button class="tab active" onclick="switchTab('guide')">📖 使用指南</button>
+            <button class="tab" onclick="switchTab('manage-products')">➕ 管理产品</button>
+            <button class="tab" onclick="switchTab('summary')">📊 价格总览</button>
+            <!-- Product tabs will be dynamically generated here -->
+        </div>
+
+        <!-- Guide Tab -->
+        <div id="guide" class="tab-content active">
+            <div class="guide-content">
+                <h3>🎯 快速开始</h3>
+                <p>这个价格追踪工具帮你记录和比较CeraVe和Garnier产品在不同店铺的价格，自动计算最低价和促销优惠。</p>
+
+                <h3>🧮 促销计算说明</h3>
+                <p>常见的促销类型和计算方法：</p>
+
+                <table class="guide-table">
+                    <thead>
+                        <tr>
+                            <th>促销类型</th>
+                            <th>计算方法</th>
+                            <th>公式</th>
+                            <th>示例 (RM 25.90)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>第二件半价</strong><br>(2nd Item -50%)</td>
+                            <td>买2件总价 ÷ 2<br>第1件原价 + 第2件半价</td>
+                            <td>(原价 × 1.5) ÷ 2</td>
+                            <td><strong>RM 19.43/件</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>第二件-30%</strong><br>(2nd Item -30%)</td>
+                            <td>买2件总价 ÷ 2<br>第1件原价 + 第2件7折</td>
+                            <td>(原价 × 1.7) ÷ 2</td>
+                            <td><strong>RM 22.02/件</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>买一送一</strong><br>(Buy 1 Free 1)</td>
+                            <td>原价 ÷ 2<br>拿2件付1件的钱</td>
+                            <td>原价 ÷ 2</td>
+                            <td><strong>RM 12.95/件</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>买二送一</strong><br>(Buy 2 Free 1)</td>
+                            <td>原价 × 2 ÷ 3<br>拿3件付2件的钱</td>
+                            <td>(原价 × 2) ÷ 3</td>
+                            <td><strong>RM 17.27/件</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>固定价格</strong><br>(3 for RM60)</td>
+                            <td>总价 ÷ 数量<br>例如3件RM60</td>
+                            <td>60 ÷ 3</td>
+                            <td><strong>RM 20.00/件</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>百分比折扣</strong><br>(20% OFF)</td>
+                            <td>原价 × 折扣百分比</td>
+                            <td>原价 × 0.8</td>
+                            <td><strong>RM 20.72/件</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>📝 如何使用</h3>
+                <h4>1. 记录价格</h4>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>选择产品标签页</li>
+                    <li>在促销计算器输入原价，自动计算促销单价</li>
+                    <li>在价格输入表格填入日期和价格</li>
+                    <li><strong>Price列</strong>：填入原价</li>
+                    <li><strong>Promo列（橙色）</strong>：如果有促销，填入计算后的单价</li>
+                    <li>点击"保存价格记录"按钮</li>
+                </ul>
+
+                <h4>2. 查看分析</h4>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>🟢 绿色背景 = 当前最低价格</li>
+                    <li>🏆 金色背景 = 全年最低价（历史最便宜）</li>
+                    <li>🟡 橙色背景 = 促销价格</li>
+                    <li>▼ = 降价 | ▲ = 涨价 | — = 价格不变</li>
+                    <li>查看统计卡片了解历史最低价和平均价</li>
+                </ul>
+
+                <div class="tip-box">
+                    <strong>💡 重要提示：</strong><br>
+                    Promo列填的是「单价」不是总价！这样才能公平比较不同促销和原价。<br>
+                    例如：买一送一RM25.90，应该填入RM12.95 (25.90÷2)
+                </div>
+
+                <div class="tip-box">
+                    <strong>🏆 全年最低价标记：</strong><br>
+                    金色背景 + 🏆 图标 = 这是你记录过的最便宜价格！<br>
+                    当某个价格等于历史最低价时，会自动标记为金色。<br>
+                    这样你可以一眼看出什么时候买最划算！
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ 数据保存：</strong><br>
+                    所有数据保存在浏览器的本地存储。清除浏览器数据会删除所有记录。<br>
+                    建议定期使用"导出数据"功能备份。
+                </div>
+
+                <h3>➕ 产品管理</h3>
+                <h4>添加自定义产品</h4>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>点击"➕ 管理产品"标签页</li>
+                    <li>输入产品ID（英文和数字，无空格，例如：lotion-355）</li>
+                    <li>输入产品名称（可以使用中文，例如：CeraVe Lotion 355ml）</li>
+                    <li>点击"添加产品"按钮</li>
+                    <li>新产品标签页会自动出现</li>
+                </ul>
+
+                <h4>删除自定义产品</h4>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>在"管理产品"页面找到要删除的产品</li>
+                    <li>点击"删除"按钮（默认产品无法删除）</li>
+                    <li>确认删除后，产品及其所有价格记录将被删除</li>
+                </ul>
+
+                <h3>🔄 数据管理</h3>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li><strong>导出为JSON</strong>：备份所有数据（包括自定义产品）</li>
+                    <li><strong>导入数据</strong>：恢复之前的备份</li>
+                    <li><strong>清除所有数据</strong>：重新开始（谨慎使用）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Manage Products Tab -->
+        <div id="manage-products" class="tab-content">
+            <div class="product-management">
+                <h3>➕ 添加新产品</h3>
+                <div class="add-product-form">
+                    <input type="text" id="newProductKey" placeholder="产品ID (例如: lotion-355)" maxlength="50">
+                    <input type="text" id="newProductName" placeholder="产品名称 (例如: CeraVe Lotion 355ml)" maxlength="100">
+                    <button class="btn btn-success" onclick="addNewProduct()">添加产品</button>
+                </div>
+                <div class="tip-box">
+                    <strong>💡 提示：</strong><br>
+                    • 产品ID：用英文和数字，不要有空格 (例如: lotion-355, cream-454)<br>
+                    • 产品名称：可以使用中文，这是显示在标签页的名称<br>
+                    • 默认产品不能删除，但你可以添加自定义产品
+                </div>
+            </div>
+
+            <h3 style="color: #667eea; margin-bottom: 20px;">📦 产品列表</h3>
+            <div class="product-list" id="productList">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Summary Tab -->
+        <div id="summary" class="tab-content">
+            <h3 style="color: #667eea; margin-bottom: 20px;">📊 所有产品价格总览</h3>
+
+            <div class="export-buttons">
+                <button class="btn btn-secondary" onclick="exportData()">💾 导出数据 (JSON)</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 导入数据</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                <button class="btn btn-delete" onclick="clearAllData()">🗑️ 清除所有数据</button>
+            </div>
+
+            <table class="price-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Guardian</th>
+                        <th>Watsons</th>
+                        <th>Caring</th>
+                        <th>Shopee</th>
+                        <th>Current Low</th>
+                        <th>Best Store</th>
+                        <th>Hist. Low</th>
+                    </tr>
+                </thead>
+                <tbody id="summaryTableBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Product Tabs Container (dynamically generated) -->
+        <div id="productTabsContainer"></div>
+    </div>
+
+    <script>
+        // Default products (cannot be deleted)
+        const defaultProducts = {
+            'hydrating-88': 'CeraVe Hydrating Cleanser 88ml',
+            'hydrating-234': 'CeraVe Hydrating Cleanser 234ml',
+            'hydrating-400': 'CeraVe Hydrating Cleanser 400ml',
+            'foaming-88': 'CeraVe Foaming Cleanser 88ml',
+            'foaming-234': 'CeraVe Foaming Cleanser 234ml',
+            'foaming-400': 'CeraVe Foaming Cleanser 400ml',
+            'garnier': 'Garnier Rose Water 400ml'
+        };
+
+        const stores = ['Guardian', 'Watsons', 'Caring', 'Shopee'];
+
+        // Initialize data structure
+        let priceData = {};
+        let customProducts = {}; // Custom products added by user
+        let products = {}; // Combined products (default + custom)
+
+        // Load data from localStorage
+        function loadData() {
+            // Load price data
+            const saved = localStorage.getItem('ceravePriceData');
+            if (saved) {
+                priceData = JSON.parse(saved);
+            }
+
+            // Load custom products
+            const savedProducts = localStorage.getItem('customProducts');
+            if (savedProducts) {
+                customProducts = JSON.parse(savedProducts);
+            }
+
+            // Combine default and custom products
+            products = { ...defaultProducts, ...customProducts };
+
+            // Initialize empty data for new products
+            Object.keys(products).forEach(key => {
+                if (!priceData[key]) {
+                    priceData[key] = [];
+                }
+            });
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('ceravePriceData', JSON.stringify(priceData));
+        }
+
+        // Save custom products to localStorage
+        function saveCustomProducts() {
+            localStorage.setItem('customProducts', JSON.stringify(customProducts));
+        }
+
+        // Add new product
+        function addNewProduct() {
+            const key = document.getElementById('newProductKey').value.trim();
+            const name = document.getElementById('newProductName').value.trim();
+
+            // Validation
+            if (!key || !name) {
+                alert('请填写产品ID和产品名称！');
+                return;
+            }
+
+            // Check if key contains spaces
+            if (key.includes(' ')) {
+                alert('产品ID不能包含空格！请使用连字符 (-) 或下划线 (_)');
+                return;
+            }
+
+            // Check if product already exists
+            if (products[key]) {
+                alert('产品ID已存在！请使用不同的ID');
+                return;
+            }
+
+            // Add to custom products
+            customProducts[key] = name;
+            products[key] = name;
+            priceData[key] = [];
+
+            // Save and refresh
+            saveCustomProducts();
+            saveData();
+
+            // Clear form
+            document.getElementById('newProductKey').value = '';
+            document.getElementById('newProductName').value = '';
+
+            // Refresh the page to show new product
+            alert('产品添加成功！');
+            initializeApp();
+        }
+
+        // Delete product
+        function deleteProduct(key) {
+            if (defaultProducts[key]) {
+                alert('默认产品不能删除！');
+                return;
+            }
+
+            if (confirm(`确定要删除产品 "${products[key]}" 吗？\n这将删除该产品的所有价格记录！`)) {
+                // Remove from custom products
+                delete customProducts[key];
+                delete products[key];
+                delete priceData[key];
+
+                // Save
+                saveCustomProducts();
+                saveData();
+
+                alert('产品已删除！');
+                initializeApp();
+            }
+        }
+
+        // Update product list UI
+        function updateProductList() {
+            const listDiv = document.getElementById('productList');
+            let html = '';
+
+            Object.keys(products).forEach(key => {
+                const isDefault = defaultProducts[key] !== undefined;
+                const name = products[key];
+                const recordCount = priceData[key] ? priceData[key].length : 0;
+
+                html += `
+                    <div class="product-item ${isDefault ? 'default' : ''}">
+                        <div>
+                            <strong>${name}</strong>
+                            ${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}
+                            <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">
+                                ID: ${key} | 记录数: ${recordCount}
+                            </div>
+                        </div>
+                        <div>
+                            ${!isDefault ? `<button class="btn-delete" onclick="deleteProduct('${key}')">删除</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            listDiv.innerHTML = html;
+        }
+
+        // Generate product tabs dynamically
+        function generateTabs() {
+            const tabsContainer = document.getElementById('tabsContainer');
+            const productTabsContainer = document.getElementById('productTabsContainer');
+
+            // Clear existing product tabs
+            const existingProductTabs = tabsContainer.querySelectorAll('.product-tab');
+            existingProductTabs.forEach(tab => tab.remove());
+
+            // Clear product tab content
+            productTabsContainer.innerHTML = '';
+
+            // Add product tabs
+            Object.keys(products).forEach(key => {
+                // Add tab button
+                const tabButton = document.createElement('button');
+                tabButton.className = 'tab product-tab';
+                tabButton.textContent = products[key];
+                tabButton.onclick = () => switchTab(key);
+                tabsContainer.appendChild(tabButton);
+
+                // Add tab content
+                const tabContent = document.createElement('div');
+                tabContent.id = key;
+                tabContent.className = 'tab-content';
+                tabContent.innerHTML = `<div id="content-${key}"></div>`;
+                productTabsContainer.appendChild(tabContent);
+            });
+        }
+
+        // Switch tabs
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+
+            // Update based on tab
+            if (tabId === 'summary') {
+                updateSummaryTable();
+            } else if (tabId === 'manage-products') {
+                updateProductList();
+            }
+        }
+
+        // Create product page content
+        function createProductPage(productKey) {
+            const productName = products[productKey];
+            const contentDiv = document.getElementById(`content-${productKey}`);
+
+            contentDiv.innerHTML = `
+                <h3 style="color: #667eea; margin-bottom: 20px;">${productName}</h3>
+
+                <!-- Promo Calculator -->
+                <div class="promo-calculator">
+                    <h3>🧮 促销计算器</h3>
+                    <div class="calc-grid">
+                        <div class="calc-item">
+                            <h4>第二件半价 (2nd -50%)</h4>
+                            <div class="calc-input">
+                                <input type="number" id="${productKey}-calc1" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 1)">
+                            </div>
+                            <div class="calc-result" id="${productKey}-result1">单价: RM 0.00</div>
+                        </div>
+                        <div class="calc-item">
+                            <h4>第二件-30% (2nd -30%)</h4>
+                            <div class="calc-input">
+                                <input type="number" id="${productKey}-calc2" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 2)">
+                            </div>
+                            <div class="calc-result" id="${productKey}-result2">单价: RM 0.00</div>
+                        </div>
+                        <div class="calc-item">
+                            <h4>买一送一 (Buy 1 Free 1)</h4>
+                            <div class="calc-input">
+                                <input type="number" id="${productKey}-calc3" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 3)">
+                            </div>
+                            <div class="calc-result" id="${productKey}-result3">单价: RM 0.00</div>
+                        </div>
+                        <div class="calc-item">
+                            <h4>买二送一 (Buy 2 Free 1)</h4>
+                            <div class="calc-input">
+                                <input type="number" id="${productKey}-calc4" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 4)">
+                            </div>
+                            <div class="calc-result" id="${productKey}-result4">单价: RM 0.00</div>
+                        </div>
+                        <div class="calc-item">
+                            <h4>固定价格 (e.g. 3 for RM60)</h4>
+                            <div class="calc-input">
+                                <input type="number" id="${productKey}-calc5-total" placeholder="总价" step="0.01" oninput="calculate('${productKey}', 5)">
+                                <input type="number" id="${productKey}-calc5-qty" placeholder="数量" step="1" oninput="calculate('${productKey}', 5)">
+                            </div>
+                            <div class="calc-result" id="${productKey}-result5">单价: RM 0.00</div>
+                        </div>
+                        <div class="calc-item">
+                            <h4>百分比折扣 (% OFF)</h4>
+                            <div class="calc-input">
+                                <input type="number" id="${productKey}-calc6-price" placeholder="原价" step="0.01" oninput="calculate('${productKey}', 6)">
+                                <input type="number" id="${productKey}-calc6-percent" placeholder="折扣%" step="1" oninput="calculate('${productKey}', 6)">
+                            </div>
+                            <div class="calc-result" id="${productKey}-result6">单价: RM 0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Entry Form -->
+                <div class="price-entry">
+                    <h3>📝 记录价格</h3>
+                    <div class="form-row header">
+                        <div>日期</div>
+                        <div>Guardian<br>Price</div>
+                        <div>Guardian<br>Promo</div>
+                        <div>Watsons<br>Price</div>
+                        <div>Watsons<br>Promo</div>
+                        <div>Caring<br>Price</div>
+                        <div>Caring<br>Promo</div>
+                        <div>Shopee<br>Price</div>
+                        <div>Shopee<br>Promo</div>
+                    </div>
+                    <div class="form-row">
+                        <input type="date" id="${productKey}-date" value="${new Date().toISOString().split('T')[0]}">
+                        <input type="number" id="${productKey}-guardian-price" placeholder="0.00" step="0.01">
+                        <input type="number" id="${productKey}-guardian-promo" placeholder="0.00" step="0.01" class="promo-input">
+                        <input type="number" id="${productKey}-watsons-price" placeholder="0.00" step="0.01">
+                        <input type="number" id="${productKey}-watsons-promo" placeholder="0.00" step="0.01" class="promo-input">
+                        <input type="number" id="${productKey}-caring-price" placeholder="0.00" step="0.01">
+                        <input type="number" id="${productKey}-caring-promo" placeholder="0.00" step="0.01" class="promo-input">
+                        <input type="number" id="${productKey}-shopee-price" placeholder="0.00" step="0.01">
+                        <input type="number" id="${productKey}-shopee-promo" placeholder="0.00" step="0.01" class="promo-input">
+                    </div>
+                    <button class="btn btn-primary" onclick="savePriceEntry('${productKey}')">💾 保存价格记录</button>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="summary-cards" id="${productKey}-stats">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
+                <!-- Price History Table -->
+                <h3 style="color: #667eea; margin-bottom: 15px;">📈 价格历史记录</h3>
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Guardian</th>
+                            <th>Watsons</th>
+                            <th>Caring</th>
+                            <th>Shopee</th>
+                            <th>Lowest</th>
+                            <th>Best Store</th>
+                            <th>Diff</th>
+                            <th>Trend</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="${productKey}-history">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            `;
+
+            updateProductPage(productKey);
+        }
+
+        // Calculate promo prices
+        function calculate(productKey, type) {
+            let result = 0;
+            let resultText = '';
+
+            switch(type) {
+                case 1: // 2nd item -50%
+                    const price1 = parseFloat(document.getElementById(`${productKey}-calc1`).value) || 0;
+                    result = (price1 * 1.5) / 2;
+                    resultText = `单价: RM ${result.toFixed(2)}`;
+                    break;
+                case 2: // 2nd item -30%
+                    const price2 = parseFloat(document.getElementById(`${productKey}-calc2`).value) || 0;
+                    result = (price2 * 1.7) / 2;
+                    resultText = `单价: RM ${result.toFixed(2)}`;
+                    break;
+                case 3: // Buy 1 Free 1
+                    const price3 = parseFloat(document.getElementById(`${productKey}-calc3`).value) || 0;
+                    result = price3 / 2;
+                    resultText = `单价: RM ${result.toFixed(2)}`;
+                    break;
+                case 4: // Buy 2 Free 1
+                    const price4 = parseFloat(document.getElementById(`${productKey}-calc4`).value) || 0;
+                    result = (price4 * 2) / 3;
+                    resultText = `单价: RM ${result.toFixed(2)}`;
+                    break;
+                case 5: // Fixed price
+                    const total = parseFloat(document.getElementById(`${productKey}-calc5-total`).value) || 0;
+                    const qty = parseFloat(document.getElementById(`${productKey}-calc5-qty`).value) || 1;
+                    result = total / qty;
+                    resultText = `单价: RM ${result.toFixed(2)}`;
+                    break;
+                case 6: // Percentage off
+                    const price6 = parseFloat(document.getElementById(`${productKey}-calc6-price`).value) || 0;
+                    const percent = parseFloat(document.getElementById(`${productKey}-calc6-percent`).value) || 0;
+                    result = price6 * (1 - percent / 100);
+                    resultText = `单价: RM ${result.toFixed(2)}`;
+                    break;
+            }
+
+            document.getElementById(`${productKey}-result${type}`).textContent = resultText;
+        }
+
+        // Save price entry
+        function savePriceEntry(productKey) {
+            const date = document.getElementById(`${productKey}-date`).value;
+            if (!date) {
+                alert('请选择日期！');
+                return;
+            }
+
+            const entry = {
+                date: date,
+                prices: {}
+            };
+
+            stores.forEach(store => {
+                const storeKey = store.toLowerCase();
+                const price = parseFloat(document.getElementById(`${productKey}-${storeKey}-price`).value) || null;
+                const promo = parseFloat(document.getElementById(`${productKey}-${storeKey}-promo`).value) || null;
+
+                entry.prices[store] = {
+                    regular: price,
+                    promo: promo
+                };
+            });
+
+            // Add to data
+            if (!priceData[productKey]) {
+                priceData[productKey] = [];
+            }
+            priceData[productKey].unshift(entry); // Add to beginning
+
+            // Save and update
+            saveData();
+            updateProductPage(productKey);
+
+            // Clear form
+            stores.forEach(store => {
+                const storeKey = store.toLowerCase();
+                document.getElementById(`${productKey}-${storeKey}-price`).value = '';
+                document.getElementById(`${productKey}-${storeKey}-promo`).value = '';
+            });
+
+            alert('价格记录已保存！');
+        }
+
+        // Update product page
+        function updateProductPage(productKey) {
+            const data = priceData[productKey] || [];
+
+            // Update statistics cards
+            updateStatisticsCards(productKey, data);
+
+            // Update history table
+            updateHistoryTable(productKey, data);
+        }
+
+        // Update statistics cards
+        function updateStatisticsCards(productKey, data) {
+            const statsDiv = document.getElementById(`${productKey}-stats`);
+
+            if (data.length === 0) {
+                statsDiv.innerHTML = '<p style="text-align: center; color: #6c757d;">暂无数据，请先添加价格记录</p>';
+                return;
+            }
+
+            // Calculate statistics
+            let allPrices = [];
+            data.forEach(entry => {
+                stores.forEach(store => {
+                    const storeData = entry.prices[store];
+                    if (storeData) {
+                        const effectivePrice = storeData.promo || storeData.regular;
+                        if (effectivePrice) allPrices.push(effectivePrice);
+                    }
+                });
+            });
+
+            const currentLowest = Math.min(...allPrices);
+            const historicalLowest = Math.min(...allPrices);
+            const avgPrice = allPrices.reduce((a, b) => a + b, 0) / allPrices.length;
+
+            // Find best store for current lowest
+            let bestStore = '';
+            const latestEntry = data[0];
+            stores.forEach(store => {
+                const storeData = latestEntry.prices[store];
+                if (storeData) {
+                    const effectivePrice = storeData.promo || storeData.regular;
+                    if (effectivePrice === currentLowest) {
+                        bestStore = store;
+                    }
+                }
+            });
+
+            statsDiv.innerHTML = `
+                <div class="summary-card">
+                    <h4>当前最低价</h4>
+                    <div class="value">RM ${currentLowest.toFixed(2)}</div>
+                    <div class="subtext">${bestStore}</div>
+                </div>
+                <div class="summary-card">
+                    <h4>历史最低价</h4>
+                    <div class="value">RM ${historicalLowest.toFixed(2)}</div>
+                    <div class="subtext">最便宜的记录</div>
+                </div>
+                <div class="summary-card">
+                    <h4>平均价格</h4>
+                    <div class="value">RM ${avgPrice.toFixed(2)}</div>
+                    <div class="subtext">所有记录的平均</div>
+                </div>
+                <div class="summary-card">
+                    <h4>记录次数</h4>
+                    <div class="value">${data.length}</div>
+                    <div class="subtext">总共的价格记录</div>
+                </div>
+            `;
+        }
+
+        // Update history table
+        function updateHistoryTable(productKey, data) {
+            const tbody = document.getElementById(`${productKey}-history`);
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #6c757d; padding: 30px;">暂无价格历史记录</td></tr>';
+                return;
+            }
+
+            // Calculate all-time lowest price
+            let allTimePrices = [];
+            data.forEach(entry => {
+                stores.forEach(store => {
+                    const storeData = entry.prices[store];
+                    if (storeData) {
+                        const effectivePrice = storeData.promo || storeData.regular;
+                        if (effectivePrice) {
+                            allTimePrices.push(effectivePrice);
+                        }
+                    }
+                });
+            });
+            const allTimeLow = allTimePrices.length > 0 ? Math.min(...allTimePrices) : 0;
+
+            let html = '';
+            data.forEach((entry, index) => {
+                // Calculate lowest for this row
+                let prices = [];
+                let priceDisplay = {};
+
+                stores.forEach(store => {
+                    const storeData = entry.prices[store];
+                    if (storeData) {
+                        const effectivePrice = storeData.promo || storeData.regular;
+                        if (effectivePrice) {
+                            prices.push(effectivePrice);
+                        }
+                        priceDisplay[store] = {
+                            regular: storeData.regular,
+                            promo: storeData.promo,
+                            effective: effectivePrice
+                        };
+                    }
+                });
+
+                const lowest = prices.length > 0 ? Math.min(...prices) : 0;
+                const highest = prices.length > 0 ? Math.max(...prices) : 0;
+                const diff = highest - lowest;
+
+                // Find best store
+                let bestStore = '';
+                stores.forEach(store => {
+                    if (priceDisplay[store] && priceDisplay[store].effective === lowest) {
+                        bestStore = store;
+                    }
+                });
+
+                // Calculate trend
+                let trend = '—';
+                if (index < data.length - 1) {
+                    const prevEntry = data[index + 1];
+                    let prevPrices = [];
+                    stores.forEach(store => {
+                        const storeData = prevEntry.prices[store];
+                        if (storeData) {
+                            const effectivePrice = storeData.promo || storeData.regular;
+                            if (effectivePrice) prevPrices.push(effectivePrice);
+                        }
+                    });
+                    const prevLowest = prevPrices.length > 0 ? Math.min(...prevPrices) : 0;
+
+                    if (lowest < prevLowest) {
+                        trend = '<span class="trend-down">▼</span>';
+                    } else if (lowest > prevLowest) {
+                        trend = '<span class="trend-up">▲</span>';
+                    }
+                }
+
+                html += '<tr>';
+                html += `<td>${entry.date}</td>`;
+
+                // Store prices
+                stores.forEach(store => {
+                    const data = priceDisplay[store];
+                    if (data) {
+                        let cellClass = '';
+                        let displayPrice = '';
+
+                        // Check if this is all-time low
+                        const isAllTimeLow = data.effective === allTimeLow;
+                        const isCurrentLow = data.effective === lowest;
+
+                        if (data.promo) {
+                            if (isAllTimeLow) {
+                                cellClass = 'all-time-low promo-price';
+                            } else if (isCurrentLow) {
+                                cellClass = 'lowest-price promo-price';
+                            } else {
+                                cellClass = 'promo-price';
+                            }
+                            displayPrice = `<div>RM ${data.regular ? data.regular.toFixed(2) : '-'}</div><div style="font-size: 0.85em;">RM ${data.promo.toFixed(2)}</div>`;
+                        } else if (data.regular) {
+                            if (isAllTimeLow) {
+                                cellClass = 'all-time-low';
+                            } else if (isCurrentLow) {
+                                cellClass = 'lowest-price';
+                            }
+                            displayPrice = `RM ${data.regular.toFixed(2)}`;
+                        } else {
+                            displayPrice = '-';
+                        }
+
+                        html += `<td class="${cellClass}">${displayPrice}</td>`;
+                    } else {
+                        html += '<td>-</td>';
+                    }
+                });
+
+                // Check if the lowest price in this row is all-time low
+                const lowestCellClass = lowest === allTimeLow ? 'all-time-low' : 'lowest-price';
+                const bestStoreCellClass = lowest === allTimeLow ? 'all-time-low' : 'lowest-price';
+
+                html += `<td class="${lowestCellClass}">RM ${lowest.toFixed(2)}</td>`;
+                html += `<td class="${bestStoreCellClass}">${bestStore}</td>`;
+                html += `<td>RM ${diff.toFixed(2)}</td>`;
+                html += `<td>${trend}</td>`;
+                html += `<td><button class="btn-delete" onclick="deleteEntry('${productKey}', ${index})">删除</button></td>`;
+                html += '</tr>';
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // Delete entry
+        function deleteEntry(productKey, index) {
+            if (confirm('确定要删除这条记录吗？')) {
+                priceData[productKey].splice(index, 1);
+                saveData();
+                updateProductPage(productKey);
+            }
+        }
+
+        // Update summary table
+        function updateSummaryTable() {
+            const tbody = document.getElementById('summaryTableBody');
+            let html = '';
+
+            Object.keys(products).forEach(key => {
+                const productName = products[key];
+                const data = priceData[key] || [];
+
+                if (data.length === 0) {
+                    html += `<tr>
+                        <td style="text-align: left;"><strong>${productName}</strong></td>
+                        <td colspan="7" style="color: #6c757d;">暂无数据</td>
+                    </tr>`;
+                    return;
+                }
+
+                // Get latest prices
+                const latest = data[0];
+                let storePrices = {};
+                let allPrices = [];
+
+                stores.forEach(store => {
+                    const storeData = latest.prices[store];
+                    if (storeData) {
+                        const effectivePrice = storeData.promo || storeData.regular;
+                        storePrices[store] = effectivePrice;
+                        if (effectivePrice) allPrices.push(effectivePrice);
+                    }
+                });
+
+                const currentLow = allPrices.length > 0 ? Math.min(...allPrices) : 0;
+
+                // Find best store
+                let bestStore = '';
+                stores.forEach(store => {
+                    if (storePrices[store] === currentLow) {
+                        bestStore = store;
+                    }
+                });
+
+                // Get historical lowest (all-time low)
+                let historicalPrices = [];
+                data.forEach(entry => {
+                    stores.forEach(store => {
+                        const storeData = entry.prices[store];
+                        if (storeData) {
+                            const effectivePrice = storeData.promo || storeData.regular;
+                            if (effectivePrice) historicalPrices.push(effectivePrice);
+                        }
+                    });
+                });
+                const histLow = historicalPrices.length > 0 ? Math.min(...historicalPrices) : 0;
+
+                // Check if current low is all-time low
+                const isAllTimeLow = currentLow === histLow;
+
+                html += '<tr>';
+                html += `<td style="text-align: left;"><strong>${productName}</strong></td>`;
+
+                stores.forEach(store => {
+                    const price = storePrices[store];
+                    let cellClass = '';
+                    if (price === currentLow) {
+                        cellClass = isAllTimeLow ? 'all-time-low' : 'lowest-price';
+                    }
+                    html += `<td class="${cellClass}">${price ? 'RM ' + price.toFixed(2) : '-'}</td>`;
+                });
+
+                const currentLowClass = isAllTimeLow ? 'all-time-low' : 'lowest-price';
+                html += `<td class="${currentLowClass}">RM ${currentLow.toFixed(2)}</td>`;
+                html += `<td class="${currentLowClass}">${bestStore}</td>`;
+                html += `<td style="background: #fff2cc; font-weight: bold;">RM ${histLow.toFixed(2)}</td>`;
+                html += '</tr>';
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // Export data
+        function exportData() {
+            const exportObj = {
+                priceData: priceData,
+                customProducts: customProducts
+            };
+            const dataStr = JSON.stringify(exportObj, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `cerave-price-tracker-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        // Import data
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (confirm('导入数据将覆盖现有数据，确定继续吗？')) {
+                        // Support both old and new format
+                        if (imported.priceData && imported.customProducts !== undefined) {
+                            // New format with custom products
+                            priceData = imported.priceData;
+                            customProducts = imported.customProducts;
+                        } else {
+                            // Old format (just price data)
+                            priceData = imported;
+                        }
+                        saveData();
+                        saveCustomProducts();
+                        alert('数据导入成功！');
+                        location.reload();
+                    }
+                } catch (error) {
+                    alert('数据格式错误，导入失败！');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('警告：这将删除所有价格记录和自定义产品！确定要继续吗？')) {
+                if (confirm('再次确认：所有数据将被永久删除，无法恢复！')) {
+                    localStorage.removeItem('ceravePriceData');
+                    localStorage.removeItem('customProducts');
+                    location.reload();
+                }
+            }
+        }
+
+        // Initialize the app
+        function initializeApp() {
+            loadData();
+            generateTabs();
+
+            // Create all product pages
+            Object.keys(products).forEach(key => {
+                createProductPage(key);
+            });
+
+            // Update summary and product list
+            updateSummaryTable();
+            updateProductList();
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            initializeApp();
+        };
+    </script>
+</body>
+</html>
