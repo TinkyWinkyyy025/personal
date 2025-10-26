@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CeraVe & Garnier Price Tracker</title>
+    <title>价格追踪器 - Price Tracker</title>
     <style>
         * {
             margin: 0;
@@ -71,6 +71,19 @@
             background: white;
             color: #667eea;
             border-bottom: 3px solid #667eea;
+        }
+
+        .category-separator {
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #667eea;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid #667eea;
+            white-space: nowrap;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .tab-content {
@@ -218,32 +231,43 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        /* Price History Table */
+        /* Price History Table - Excel Style */
         .price-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
             font-size: 14px;
+            border: 2px solid #c0c0c0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .price-table thead {
-            background: #667eea;
-            color: white;
+            background: linear-gradient(180deg, #f0f0f0 0%, #d8d8d8 100%);
+            color: #333;
+            font-weight: 700;
+            border-bottom: 2px solid #808080;
         }
 
         .price-table th,
         .price-table td {
-            padding: 12px;
+            padding: 10px 12px;
             text-align: center;
-            border: 1px solid #dee2e6;
+            border: 1px solid #c0c0c0;
+            background: white;
         }
 
-        .price-table tbody tr:nth-child(even) {
-            background: #f8f9fa;
+        .price-table th {
+            border: 1px solid #808080;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
         }
 
-        .price-table tbody tr:hover {
-            background: #e9ecef;
+        .price-table tbody tr:nth-child(even) td {
+            background: #f9f9f9;
+        }
+
+        .price-table tbody tr:hover td {
+            background: #e8f4f8;
+            transition: background 0.2s;
         }
 
         .lowest-price {
@@ -540,6 +564,7 @@
         <div class="tabs" id="tabsContainer">
             <button class="tab active" onclick="switchTab('guide')">📖 使用指南</button>
             <button class="tab" onclick="switchTab('calculator')">🧮 促销计算器</button>
+            <button class="tab" onclick="switchTab('tobuy')">🛒 购物清单</button>
             <button class="tab" onclick="switchTab('manage-products')">➕ 管理产品</button>
             <button class="tab" onclick="switchTab('summary')">📊 价格总览</button>
             <!-- Product tabs will be dynamically generated here -->
@@ -549,7 +574,7 @@
         <div id="guide" class="tab-content active">
             <div class="guide-content">
                 <h3>🎯 快速开始</h3>
-                <p>这个价格追踪工具帮你记录和比较CeraVe和Garnier产品在不同店铺的价格，自动计算最低价和促销优惠。</p>
+                <p>这个价格追踪工具帮你记录和比较任何产品在不同店铺的价格，自动计算最低价和促销优惠。支持护肤、美妆、衣服、配饰等多种品类的产品管理。</p>
 
                 <h3>🧮 促销计算说明</h3>
                 <p>常见的促销类型和计算方法：</p>
@@ -771,19 +796,63 @@
             </div>
         </div>
 
+        <!-- To Buy List Tab -->
+        <div id="tobuy" class="tab-content">
+            <h3 style="color: #667eea; margin-bottom: 20px;">🛒 购物清单 - To Buy List</h3>
+
+            <div class="product-management" style="background: #e1f5fe; border-color: #0288d1;">
+                <h3 style="color: #01579b;">➕ 添加待购商品</h3>
+                <div class="add-product-form">
+                    <input type="text" id="toBuyItemName" placeholder="商品名称 (例如: iPhone 15 Pro)" maxlength="100">
+                    <input type="text" id="toBuyStore" placeholder="期望商店 (可选)" maxlength="50">
+                    <input type="number" id="toBuyTargetPrice" placeholder="目标价格 (可选)" step="0.01">
+                    <input type="text" id="toBuyNotes" placeholder="备注 (可选)" maxlength="200">
+                    <button class="btn btn-success" onclick="addToBuyItem()">添加到清单</button>
+                </div>
+                <div class="tip-box" style="background: #e3f2fd; border-color: #2196f3;">
+                    <strong>💡 提示：</strong><br>
+                    • 在这里记录你想购买的商品<br>
+                    • 设置目标价格，当价格达到时你就知道该买了<br>
+                    • 可以添加备注记录促销活动或其他重要信息
+                </div>
+            </div>
+
+            <h3 style="color: #667eea; margin-bottom: 20px;">📝 待购商品列表</h3>
+            <table class="price-table">
+                <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>期望商店</th>
+                        <th>目标价格</th>
+                        <th>备注</th>
+                        <th>添加日期</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="toBuyListTable">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
         <!-- Manage Products Tab -->
         <div id="manage-products" class="tab-content">
             <div class="product-management">
                 <h3>➕ 添加新产品</h3>
                 <div class="add-product-form">
-                    <input type="text" id="newProductKey" placeholder="产品ID (例如: lotion-355)" maxlength="50">
-                    <input type="text" id="newProductName" placeholder="产品名称 (例如: CeraVe Lotion 355ml)" maxlength="100">
+                    <input type="text" id="newProductKey" placeholder="产品ID (例如: phone-13pro)" maxlength="50">
+                    <input type="text" id="newProductName" placeholder="产品名称 (例如: iPhone 13 Pro)" maxlength="100">
+                    <select id="newProductCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                        <option value="">选择品类...</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
                     <button class="btn btn-success" onclick="addNewProduct()">添加产品</button>
                 </div>
                 <div class="tip-box">
                     <strong>💡 提示：</strong><br>
-                    • 产品ID：用英文和数字，不要有空格 (例如: lotion-355, cream-454)<br>
+                    • 产品ID：用英文和数字，不要有空格 (例如: phone-13pro, book-cooking-101)<br>
                     • 产品名称：可以使用中文，这是显示在标签页的名称<br>
+                    • 品类：选择产品所属的品类，用于分组管理<br>
                     • 默认产品不能删除，但你可以添加自定义产品
                 </div>
             </div>
@@ -809,6 +878,27 @@
 
             <h3 style="color: #667eea; margin-bottom: 20px;">🏪 商店列表</h3>
             <div class="product-list" id="storeList">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <div class="product-management" style="margin-top: 30px; background: #fce4ec; border-color: #e91e63;">
+                <h3 style="color: #c2185b;">🏷️ 添加新品类</h3>
+                <div class="add-product-form">
+                    <input type="text" id="newCategoryKey" placeholder="品类ID (例如: electronics, books)" maxlength="50">
+                    <input type="text" id="newCategoryName" placeholder="品类名称 (例如: 电子产品, 书籍)" maxlength="100">
+                    <button class="btn btn-success" onclick="addNewCategory()">添加品类</button>
+                </div>
+                <div class="tip-box" style="background: #fff8e1; border-color: #ffc107;">
+                    <strong>💡 提示：</strong><br>
+                    • 品类ID：用英文和数字，不要有空格 (例如: electronics, books, food)<br>
+                    • 品类名称：可以使用中文，这是显示在分组中的名称<br>
+                    • 默认品类（护肤、美妆、衣服、配饰）不能删除<br>
+                    • 可以添加自定义品类来管理不同类型的产品（如：电子产品、书籍、食品等）
+                </div>
+            </div>
+
+            <h3 style="color: #667eea; margin-bottom: 20px;">🏷️ 品类列表</h3>
+            <div class="product-list" id="categoryList">
                 <!-- Will be populated by JavaScript -->
             </div>
 
@@ -848,6 +938,14 @@
     </div>
 
     <script>
+        // Default categories (cannot be deleted)
+        const defaultCategories = {
+            'skincare': '护肤',
+            'makeup': '美妆',
+            'clothing': '衣服',
+            'accessories': '配饰'
+        };
+
         // Default products (cannot be deleted)
         const defaultProducts = {
             'hydrating-88': 'CeraVe Hydrating Cleanser 88ml',
@@ -869,6 +967,11 @@
         let customStores = []; // Custom stores added by user
         let stores = []; // Combined stores (default + custom)
         let productStores = {}; // Stores for each product { productKey: [store1, store2, ...] }
+        let customCategories = {}; // Custom categories added by user
+        let categories = {}; // Combined categories (default + custom)
+        let productCategories = {}; // Category for each product { productKey: categoryKey }
+        let toBuyList = []; // To buy list items
+        let sortOrder = {}; // Sort order for each product { productKey: 'desc' | 'asc' }
 
         // Load data from localStorage
         function loadData() {
@@ -896,9 +999,28 @@
                 productStores = JSON.parse(savedProductStores);
             }
 
-            // Combine default and custom products/stores
+            // Load custom categories
+            const savedCategories = localStorage.getItem('customCategories');
+            if (savedCategories) {
+                customCategories = JSON.parse(savedCategories);
+            }
+
+            // Load product categories configuration
+            const savedProductCategories = localStorage.getItem('productCategories');
+            if (savedProductCategories) {
+                productCategories = JSON.parse(savedProductCategories);
+            }
+
+            // Load to-buy list
+            const savedToBuyList = localStorage.getItem('toBuyList');
+            if (savedToBuyList) {
+                toBuyList = JSON.parse(savedToBuyList);
+            }
+
+            // Combine default and custom products/stores/categories
             products = { ...defaultProducts, ...customProducts };
             stores = [...defaultStores, ...customStores];
+            categories = { ...defaultCategories, ...customCategories };
 
             // Initialize empty data for new products
             Object.keys(products).forEach(key => {
@@ -908,6 +1030,10 @@
                 // Initialize product stores if not exists (default to all default stores)
                 if (!productStores[key]) {
                     productStores[key] = [...defaultStores];
+                }
+                // Initialize product category if not exists (default to skincare for default products)
+                if (!productCategories[key]) {
+                    productCategories[key] = defaultProducts[key] ? 'skincare' : '';
                 }
             });
         }
@@ -930,6 +1056,211 @@
         // Save product stores configuration to localStorage
         function saveProductStores() {
             localStorage.setItem('productStores', JSON.stringify(productStores));
+        }
+
+        // Save custom categories to localStorage
+        function saveCustomCategories() {
+            localStorage.setItem('customCategories', JSON.stringify(customCategories));
+        }
+
+        // Save product categories configuration to localStorage
+        function saveProductCategories() {
+            localStorage.setItem('productCategories', JSON.stringify(productCategories));
+        }
+
+        // Save to-buy list to localStorage
+        function saveToBuyList() {
+            localStorage.setItem('toBuyList', JSON.stringify(toBuyList));
+        }
+
+        // Add item to To Buy List
+        function addToBuyItem() {
+            const itemName = document.getElementById('toBuyItemName').value.trim();
+            const store = document.getElementById('toBuyStore').value.trim();
+            const targetPrice = parseFloat(document.getElementById('toBuyTargetPrice').value) || null;
+            const notes = document.getElementById('toBuyNotes').value.trim();
+
+            if (!itemName) {
+                alert('请填写商品名称！');
+                return;
+            }
+
+            const item = {
+                id: Date.now(), // Unique ID
+                name: itemName,
+                store: store || '-',
+                targetPrice: targetPrice,
+                notes: notes || '-',
+                dateAdded: new Date().toISOString().split('T')[0]
+            };
+
+            toBuyList.unshift(item); // Add to beginning
+            saveToBuyList();
+            updateToBuyList();
+
+            // Clear form
+            document.getElementById('toBuyItemName').value = '';
+            document.getElementById('toBuyStore').value = '';
+            document.getElementById('toBuyTargetPrice').value = '';
+            document.getElementById('toBuyNotes').value = '';
+
+            alert('商品已添加到购物清单！');
+        }
+
+        // Delete item from To Buy List
+        function deleteToBuyItem(id) {
+            if (confirm('确定要删除这个商品吗？')) {
+                toBuyList = toBuyList.filter(item => item.id !== id);
+                saveToBuyList();
+                updateToBuyList();
+            }
+        }
+
+        // Update To Buy List table
+        function updateToBuyList() {
+            const tbody = document.getElementById('toBuyListTable');
+
+            if (toBuyList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6c757d; padding: 30px;">暂无待购商品</td></tr>';
+                return;
+            }
+
+            let html = '';
+            toBuyList.forEach(item => {
+                const priceDisplay = item.targetPrice ? `RM ${item.targetPrice.toFixed(2)}` : '-';
+                html += `
+                    <tr>
+                        <td><strong>${item.name}</strong></td>
+                        <td>${item.store}</td>
+                        <td>${priceDisplay}</td>
+                        <td>${item.notes}</td>
+                        <td>${item.dateAdded}</td>
+                        <td><button class="btn-delete" onclick="deleteToBuyItem(${item.id})">删除</button></td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // Add new category
+        function addNewCategory() {
+            const key = document.getElementById('newCategoryKey').value.trim();
+            const name = document.getElementById('newCategoryName').value.trim();
+
+            // Validation
+            if (!key || !name) {
+                alert('请填写品类ID和品类名称！');
+                return;
+            }
+
+            // Check if key contains spaces
+            if (key.includes(' ')) {
+                alert('品类ID不能包含空格！请使用连字符 (-) 或下划线 (_)');
+                return;
+            }
+
+            // Check if category already exists
+            if (categories[key]) {
+                alert('品类ID已存在！请使用不同的ID');
+                return;
+            }
+
+            // Add to custom categories
+            customCategories[key] = name;
+            categories[key] = name;
+
+            // Save and refresh
+            saveCustomCategories();
+
+            // Clear form
+            document.getElementById('newCategoryKey').value = '';
+            document.getElementById('newCategoryName').value = '';
+
+            // Refresh the page
+            alert('品类添加成功！');
+            initializeApp();
+        }
+
+        // Delete category
+        function deleteCategory(key) {
+            if (defaultCategories[key]) {
+                alert('默认品类不能删除！');
+                return;
+            }
+
+            // Check if any products use this category
+            const productsUsingCategory = Object.keys(productCategories).filter(
+                productKey => productCategories[productKey] === key
+            );
+
+            if (productsUsingCategory.length > 0) {
+                alert(`无法删除！有 ${productsUsingCategory.length} 个产品正在使用此品类。`);
+                return;
+            }
+
+            if (confirm(`确定要删除品类 "${categories[key]}" 吗？`)) {
+                // Remove from custom categories
+                delete customCategories[key];
+                delete categories[key];
+
+                // Save
+                saveCustomCategories();
+
+                alert('品类已删除！');
+                initializeApp();
+            }
+        }
+
+        // Update category list UI
+        function updateCategoryList() {
+            const listDiv = document.getElementById('categoryList');
+            let html = '';
+
+            Object.keys(categories).forEach(key => {
+                const isDefault = defaultCategories[key] !== undefined;
+                const name = categories[key];
+
+                // Count products in this category
+                let productCount = 0;
+                Object.keys(productCategories).forEach(productKey => {
+                    if (productCategories[productKey] === key) {
+                        productCount++;
+                    }
+                });
+
+                html += `
+                    <div class="product-item ${isDefault ? 'default' : ''}">
+                        <div>
+                            <strong>${name}</strong>
+                            ${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}
+                            <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">
+                                ID: ${key} | 产品数: ${productCount}
+                            </div>
+                        </div>
+                        <div>
+                            ${!isDefault ? `<button class="btn-delete" onclick="deleteCategory('${key}')">删除</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            listDiv.innerHTML = html;
+        }
+
+        // Update category dropdown in product form
+        function updateCategoryDropdown() {
+            const dropdown = document.getElementById('newProductCategory');
+            if (!dropdown) return;
+
+            let html = '<option value="">选择品类...</option>';
+
+            Object.keys(categories).forEach(key => {
+                const name = categories[key];
+                html += `<option value="${key}">${name}</option>`;
+            });
+
+            dropdown.innerHTML = html;
         }
 
         // Add new store
@@ -1092,10 +1423,16 @@
         function addNewProduct() {
             const key = document.getElementById('newProductKey').value.trim();
             const name = document.getElementById('newProductName').value.trim();
+            const category = document.getElementById('newProductCategory').value;
 
             // Validation
             if (!key || !name) {
                 alert('请填写产品ID和产品名称！');
+                return;
+            }
+
+            if (!category) {
+                alert('请选择产品品类！');
                 return;
             }
 
@@ -1115,14 +1452,23 @@
             customProducts[key] = name;
             products[key] = name;
             priceData[key] = [];
+            productCategories[key] = category;
+
+            // Initialize product stores with default stores
+            if (!productStores[key]) {
+                productStores[key] = [...defaultStores];
+            }
 
             // Save and refresh
             saveCustomProducts();
             saveData();
+            saveProductCategories();
+            saveProductStores();
 
             // Clear form
             document.getElementById('newProductKey').value = '';
             document.getElementById('newProductName').value = '';
+            document.getElementById('newProductCategory').value = '';
 
             // Refresh the page to show new product
             alert('产品添加成功！');
@@ -1160,12 +1506,15 @@
                 const isDefault = defaultProducts[key] !== undefined;
                 const name = products[key];
                 const recordCount = priceData[key] ? priceData[key].length : 0;
+                const categoryKey = productCategories[key] || '';
+                const categoryName = categoryKey ? (categories[categoryKey] || categoryKey) : '未分类';
 
                 html += `
                     <div class="product-item ${isDefault ? 'default' : ''}">
                         <div>
                             <strong>${name}</strong>
                             ${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}
+                            <span class="product-badge" style="background: #ff9800;">${categoryName}</span>
                             <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">
                                 ID: ${key} | 记录数: ${recordCount}
                             </div>
@@ -1180,34 +1529,85 @@
             listDiv.innerHTML = html;
         }
 
-        // Generate product tabs dynamically
+        // Generate product tabs dynamically grouped by category
         function generateTabs() {
             const tabsContainer = document.getElementById('tabsContainer');
             const productTabsContainer = document.getElementById('productTabsContainer');
 
-            // Clear existing product tabs
+            // Clear existing product tabs and category separators
             const existingProductTabs = tabsContainer.querySelectorAll('.product-tab');
+            const existingCategorySeparators = tabsContainer.querySelectorAll('.category-separator');
             existingProductTabs.forEach(tab => tab.remove());
+            existingCategorySeparators.forEach(sep => sep.remove());
 
             // Clear product tab content
             productTabsContainer.innerHTML = '';
 
-            // Add product tabs
+            // Group products by category
+            const productsByCategory = {};
             Object.keys(products).forEach(key => {
-                // Add tab button
-                const tabButton = document.createElement('button');
-                tabButton.className = 'tab product-tab';
-                tabButton.textContent = products[key];
-                tabButton.onclick = () => switchTab(key);
-                tabsContainer.appendChild(tabButton);
-
-                // Add tab content
-                const tabContent = document.createElement('div');
-                tabContent.id = key;
-                tabContent.className = 'tab-content';
-                tabContent.innerHTML = `<div id="content-${key}"></div>`;
-                productTabsContainer.appendChild(tabContent);
+                const categoryKey = productCategories[key] || 'uncategorized';
+                if (!productsByCategory[categoryKey]) {
+                    productsByCategory[categoryKey] = [];
+                }
+                productsByCategory[categoryKey].push(key);
             });
+
+            // Add tabs grouped by category
+            Object.keys(categories).forEach(categoryKey => {
+                const categoryProducts = productsByCategory[categoryKey] || [];
+
+                if (categoryProducts.length > 0) {
+                    // Add category separator
+                    const categorySeparator = document.createElement('div');
+                    categorySeparator.className = 'category-separator';
+                    categorySeparator.textContent = `📁 ${categories[categoryKey]}`;
+                    tabsContainer.appendChild(categorySeparator);
+
+                    // Add product tabs for this category
+                    categoryProducts.forEach(key => {
+                        // Add tab button
+                        const tabButton = document.createElement('button');
+                        tabButton.className = 'tab product-tab';
+                        tabButton.textContent = products[key];
+                        tabButton.onclick = () => switchTab(key);
+                        tabsContainer.appendChild(tabButton);
+
+                        // Add tab content
+                        const tabContent = document.createElement('div');
+                        tabContent.id = key;
+                        tabContent.className = 'tab-content';
+                        tabContent.innerHTML = `<div id="content-${key}"></div>`;
+                        productTabsContainer.appendChild(tabContent);
+                    });
+                }
+            });
+
+            // Handle uncategorized products
+            const uncategorizedProducts = productsByCategory['uncategorized'] || [];
+            if (uncategorizedProducts.length > 0) {
+                // Add uncategorized separator
+                const categorySeparator = document.createElement('div');
+                categorySeparator.className = 'category-separator';
+                categorySeparator.textContent = '📁 未分类';
+                tabsContainer.appendChild(categorySeparator);
+
+                uncategorizedProducts.forEach(key => {
+                    // Add tab button
+                    const tabButton = document.createElement('button');
+                    tabButton.className = 'tab product-tab';
+                    tabButton.textContent = products[key];
+                    tabButton.onclick = () => switchTab(key);
+                    tabsContainer.appendChild(tabButton);
+
+                    // Add tab content
+                    const tabContent = document.createElement('div');
+                    tabContent.id = key;
+                    tabContent.className = 'tab-content';
+                    tabContent.innerHTML = `<div id="content-${key}"></div>`;
+                    productTabsContainer.appendChild(tabContent);
+                });
+            }
         }
 
         // Switch tabs
@@ -1230,7 +1630,11 @@
             } else if (tabId === 'manage-products') {
                 updateProductList();
                 updateStoreList();
+                updateCategoryList();
+                updateCategoryDropdown();
                 updateProductStoresConfig();
+            } else if (tabId === 'tobuy') {
+                updateToBuyList();
             }
         }
 
@@ -1286,7 +1690,12 @@
                 </div>
 
                 <!-- Price History Table -->
-                <h3 style="color: #667eea; margin-bottom: 15px;">📈 价格历史记录</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="color: #667eea; margin: 0;">📈 价格历史记录</h3>
+                    <button class="btn btn-secondary" style="padding: 8px 15px; margin: 0;" onclick="toggleSortOrder('${productKey}')">
+                        📅 切换排序 (${sortOrder[productKey] === 'asc' ? '升序 ↑' : '降序 ↓'})
+                    </button>
+                </div>
                 <table class="price-table" ${productStoresList.length === 0 ? 'style="display: none;"' : ''}>
                     <thead>
                         <tr>
@@ -1480,6 +1889,20 @@
             `;
         }
 
+        // Toggle sort order for product
+        function toggleSortOrder(productKey) {
+            // Default is descending (newest first)
+            if (!sortOrder[productKey]) {
+                sortOrder[productKey] = 'desc';
+            }
+
+            // Toggle between asc and desc
+            sortOrder[productKey] = sortOrder[productKey] === 'desc' ? 'asc' : 'desc';
+
+            // Refresh the product page
+            updateProductPage(productKey);
+        }
+
         // Update history table
         function updateHistoryTable(productKey, data) {
             const tbody = document.getElementById(`${productKey}-history`);
@@ -1491,7 +1914,17 @@
                 return;
             }
 
-            // Calculate all-time lowest price
+            // Sort data based on sort order
+            const currentSortOrder = sortOrder[productKey] || 'desc';
+            const sortedData = [...data].sort((a, b) => {
+                if (currentSortOrder === 'desc') {
+                    return b.date.localeCompare(a.date); // Newest first
+                } else {
+                    return a.date.localeCompare(b.date); // Oldest first
+                }
+            });
+
+            // Calculate all-time lowest price (use original data, not sorted)
             let allTimePrices = [];
             data.forEach(entry => {
                 productStoresList.forEach(store => {
@@ -1507,7 +1940,7 @@
             const allTimeLow = allTimePrices.length > 0 ? Math.min(...allTimePrices) : 0;
 
             let html = '';
-            data.forEach((entry, index) => {
+            sortedData.forEach((entry, index) => {
                 // Calculate lowest for this row
                 let prices = [];
                 let priceDisplay = {};
@@ -1539,10 +1972,15 @@
                     }
                 });
 
-                // Calculate trend
+                // Calculate trend by finding the chronologically previous entry
                 let trend = '—';
-                if (index < data.length - 1) {
-                    const prevEntry = data[index + 1];
+                const currentDate = entry.date;
+
+                // Find all entries with dates before current date
+                const previousEntries = data.filter(e => e.date < currentDate).sort((a, b) => b.date.localeCompare(a.date));
+
+                if (previousEntries.length > 0) {
+                    const prevEntry = previousEntries[0]; // Most recent previous entry
                     let prevPrices = [];
                     productStoresList.forEach(store => {
                         const storeData = prevEntry.prices[store];
@@ -1612,19 +2050,22 @@
                 html += `<td class="${bestStoreCellClass}">${bestStore}</td>`;
                 html += `<td>RM ${diff.toFixed(2)}</td>`;
                 html += `<td>${trend}</td>`;
-                html += `<td><button class="btn-delete" onclick="deleteEntry('${productKey}', ${index})">删除</button></td>`;
+                html += `<td><button class="btn-delete" onclick="deleteEntryByDate('${productKey}', '${entry.date}')">删除</button></td>`;
                 html += '</tr>';
             });
 
             tbody.innerHTML = html;
         }
 
-        // Delete entry
-        function deleteEntry(productKey, index) {
+        // Delete entry by date (to work with sorted data)
+        function deleteEntryByDate(productKey, date) {
             if (confirm('确定要删除这条记录吗？')) {
-                priceData[productKey].splice(index, 1);
-                saveData();
-                updateProductPage(productKey);
+                const index = priceData[productKey].findIndex(entry => entry.date === date);
+                if (index > -1) {
+                    priceData[productKey].splice(index, 1);
+                    saveData();
+                    updateProductPage(productKey);
+                }
             }
         }
 
@@ -1731,14 +2172,17 @@
                 priceData: priceData,
                 customProducts: customProducts,
                 customStores: customStores,
-                productStores: productStores
+                productStores: productStores,
+                customCategories: customCategories,
+                productCategories: productCategories,
+                toBuyList: toBuyList
             };
             const dataStr = JSON.stringify(exportObj, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `cerave-price-tracker-${new Date().toISOString().split('T')[0]}.json`;
+            link.download = `price-tracker-${new Date().toISOString().split('T')[0]}.json`;
             link.click();
         }
 
@@ -1754,11 +2198,14 @@
                     if (confirm('导入数据将覆盖现有数据，确定继续吗？')) {
                         // Support both old and new format
                         if (imported.priceData && imported.customProducts !== undefined) {
-                            // New format with custom products, stores, and product stores
+                            // New format with all data
                             priceData = imported.priceData;
                             customProducts = imported.customProducts || {};
                             customStores = imported.customStores || [];
                             productStores = imported.productStores || {};
+                            customCategories = imported.customCategories || {};
+                            productCategories = imported.productCategories || {};
+                            toBuyList = imported.toBuyList || [];
                         } else {
                             // Old format (just price data)
                             priceData = imported;
@@ -1767,6 +2214,9 @@
                         saveCustomProducts();
                         saveCustomStores();
                         saveProductStores();
+                        saveCustomCategories();
+                        saveProductCategories();
+                        saveToBuyList();
                         alert('数据导入成功！');
                         location.reload();
                     }
@@ -1779,12 +2229,15 @@
 
         // Clear all data
         function clearAllData() {
-            if (confirm('警告：这将删除所有价格记录、自定义产品、自定义商店和产品配置！确定要继续吗？')) {
+            if (confirm('警告：这将删除所有价格记录、自定义产品、自定义商店、品类、购物清单和所有配置！确定要继续吗？')) {
                 if (confirm('再次确认：所有数据将被永久删除，无法恢复！')) {
                     localStorage.removeItem('ceravePriceData');
                     localStorage.removeItem('customProducts');
                     localStorage.removeItem('customStores');
                     localStorage.removeItem('productStores');
+                    localStorage.removeItem('customCategories');
+                    localStorage.removeItem('productCategories');
+                    localStorage.removeItem('toBuyList');
                     location.reload();
                 }
             }
@@ -1800,11 +2253,14 @@
                 createProductPage(key);
             });
 
-            // Update summary, product list, store list, and product stores config
+            // Update all lists and configs
             updateSummaryTable();
             updateProductList();
             updateStoreList();
+            updateCategoryList();
+            updateCategoryDropdown();
             updateProductStoresConfig();
+            updateToBuyList();
         }
 
         // Initialize on load
