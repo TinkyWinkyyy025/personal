@@ -168,27 +168,52 @@
 
         .form-row {
             display: grid;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 10px;
-            align-items: center;
+            align-items: stretch;
         }
 
         .form-row.header {
-            font-weight: bold;
+            font-weight: 600;
             color: #495057;
-            font-size: 0.9em;
+            font-size: 13px;
             text-align: center;
+            background: #f8f9fa;
+            padding: 10px 5px;
+            border-radius: 5px;
+            align-items: center;
+            display: grid;
+        }
+
+        .form-row.header > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
         }
 
         .form-row input {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 10px 8px;
+            border: 2px solid #e0e0e0;
             border-radius: 5px;
             font-size: 14px;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .form-row input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .form-row input[type="date"] {
             text-align: center;
+        }
+
+        .form-row input[type="number"] {
+            text-align: right;
+            padding-right: 12px;
         }
 
         .promo-input {
@@ -230,43 +255,32 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        /* Price History Table - Excel Style */
+        /* Price History Table */
         .price-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
             font-size: 14px;
-            border: 2px solid #c0c0c0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .price-table thead {
-            background: linear-gradient(180deg, #f0f0f0 0%, #d8d8d8 100%);
-            color: #333;
-            font-weight: 700;
-            border-bottom: 2px solid #808080;
+            background: #667eea;
+            color: white;
         }
 
         .price-table th,
         .price-table td {
-            padding: 10px 12px;
+            padding: 12px;
             text-align: center;
-            border: 1px solid #c0c0c0;
-            background: white;
+            border: 1px solid #dee2e6;
         }
 
-        .price-table th {
-            border: 1px solid #808080;
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+        .price-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
         }
 
-        .price-table tbody tr:nth-child(even) td {
-            background: #f9f9f9;
-        }
-
-        .price-table tbody tr:hover td {
-            background: #e8f4f8;
-            transition: background 0.2s;
+        .price-table tbody tr:hover {
+            background: #e9ecef;
         }
 
         .lowest-price {
@@ -1572,6 +1586,14 @@
             'accessories': '配饰'
         };
 
+        // Default subcategories for each category
+        const defaultSubcategories = {
+            'skincare': ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Eye Cream', 'Mask'],
+            'makeup': ['Foundation', 'Concealer', 'Powder', 'Blush', 'Eyeshadow', 'Lipstick', 'Mascara'],
+            'clothing': ['T-Shirt', 'Pants', 'Dress', 'Jacket', 'Shoes'],
+            'accessories': ['Bag', 'Watch', 'Jewelry', 'Hat', 'Belt']
+        };
+
         // Default products (cannot be deleted)
         const defaultProducts = {
             'hydrating-88': 'CeraVe Hydrating Cleanser 88ml',
@@ -1581,6 +1603,28 @@
             'foaming-234': 'CeraVe Foaming Cleanser 234ml',
             'foaming-400': 'CeraVe Foaming Cleanser 400ml',
             'garnier': 'Garnier Rose Water 400ml'
+        };
+
+        // Default brands for default products
+        const defaultProductBrands = {
+            'hydrating-88': 'CeraVe',
+            'hydrating-234': 'CeraVe',
+            'hydrating-400': 'CeraVe',
+            'foaming-88': 'CeraVe',
+            'foaming-234': 'CeraVe',
+            'foaming-400': 'CeraVe',
+            'garnier': 'Garnier'
+        };
+
+        // Default subcategories for default products
+        const defaultProductSubcategories = {
+            'hydrating-88': 'Cleanser',
+            'hydrating-234': 'Cleanser',
+            'hydrating-400': 'Cleanser',
+            'foaming-88': 'Cleanser',
+            'foaming-234': 'Cleanser',
+            'foaming-400': 'Cleanser',
+            'garnier': 'Toner'
         };
 
         // Default stores (cannot be deleted)
@@ -1596,6 +1640,9 @@
         let customCategories = {}; // Custom categories added by user
         let categories = {}; // Combined categories (default + custom)
         let productCategories = {}; // Category for each product { productKey: categoryKey }
+        let productBrands = {}; // Brand for each product { productKey: brandName }
+        let subcategories = {}; // Subcategories for each category { categoryKey: [subcat1, subcat2, ...] }
+        let productSubcategories = {}; // Subcategory for each product { productKey: subcategoryName }
         let toBuyList = []; // To buy list items
         let sortOrder = {}; // Sort order for each product { productKey: 'desc' | 'asc' }
 
@@ -1643,10 +1690,35 @@
                 toBuyList = JSON.parse(savedToBuyList);
             }
 
+            // Load product brands
+            const savedProductBrands = localStorage.getItem('productBrands');
+            if (savedProductBrands) {
+                productBrands = JSON.parse(savedProductBrands);
+            }
+
+            // Load subcategories
+            const savedSubcategories = localStorage.getItem('subcategories');
+            if (savedSubcategories) {
+                subcategories = JSON.parse(savedSubcategories);
+            }
+
+            // Load product subcategories
+            const savedProductSubcategories = localStorage.getItem('productSubcategories');
+            if (savedProductSubcategories) {
+                productSubcategories = JSON.parse(savedProductSubcategories);
+            }
+
             // Combine default and custom products/stores/categories
             products = { ...defaultProducts, ...customProducts };
             stores = [...defaultStores, ...customStores];
             categories = { ...defaultCategories, ...customCategories };
+
+            // Initialize subcategories with defaults
+            Object.keys(defaultSubcategories).forEach(catKey => {
+                if (!subcategories[catKey]) {
+                    subcategories[catKey] = [...defaultSubcategories[catKey]];
+                }
+            });
 
             // Initialize empty data for new products
             Object.keys(products).forEach(key => {
@@ -1660,6 +1732,14 @@
                 // Initialize product category if not exists (default to skincare for default products)
                 if (!productCategories[key]) {
                     productCategories[key] = defaultProducts[key] ? 'skincare' : '';
+                }
+                // Initialize product brand if not exists
+                if (!productBrands[key]) {
+                    productBrands[key] = defaultProductBrands[key] || '';
+                }
+                // Initialize product subcategory if not exists
+                if (!productSubcategories[key]) {
+                    productSubcategories[key] = defaultProductSubcategories[key] || '';
                 }
             });
         }
@@ -1697,6 +1777,21 @@
         // Save to-buy list to localStorage
         function saveToBuyList() {
             localStorage.setItem('toBuyList', JSON.stringify(toBuyList));
+        }
+
+        // Save product brands to localStorage
+        function saveProductBrands() {
+            localStorage.setItem('productBrands', JSON.stringify(productBrands));
+        }
+
+        // Save subcategories to localStorage
+        function saveSubcategories() {
+            localStorage.setItem('subcategories', JSON.stringify(subcategories));
+        }
+
+        // Save product subcategories to localStorage
+        function saveProductSubcategories() {
+            localStorage.setItem('productSubcategories', JSON.stringify(productSubcategories));
         }
 
         // Add item to To Buy List
@@ -2801,6 +2896,9 @@
                 productStores: productStores,
                 customCategories: customCategories,
                 productCategories: productCategories,
+                productBrands: productBrands,
+                subcategories: subcategories,
+                productSubcategories: productSubcategories,
                 toBuyList: toBuyList
             };
             const dataStr = JSON.stringify(exportObj, null, 2);
@@ -2831,6 +2929,9 @@
                             productStores = imported.productStores || {};
                             customCategories = imported.customCategories || {};
                             productCategories = imported.productCategories || {};
+                            productBrands = imported.productBrands || {};
+                            subcategories = imported.subcategories || {};
+                            productSubcategories = imported.productSubcategories || {};
                             toBuyList = imported.toBuyList || [];
                         } else {
                             // Old format (just price data)
@@ -2842,6 +2943,9 @@
                         saveProductStores();
                         saveCustomCategories();
                         saveProductCategories();
+                        saveProductBrands();
+                        saveSubcategories();
+                        saveProductSubcategories();
                         saveToBuyList();
                         alert('数据导入成功！');
                         location.reload();
@@ -2863,6 +2967,9 @@
                     localStorage.removeItem('productStores');
                     localStorage.removeItem('customCategories');
                     localStorage.removeItem('productCategories');
+                    localStorage.removeItem('productBrands');
+                    localStorage.removeItem('subcategories');
+                    localStorage.removeItem('productSubcategories');
                     localStorage.removeItem('toBuyList');
                     location.reload();
                 }
