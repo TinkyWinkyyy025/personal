@@ -537,6 +537,273 @@
             margin-bottom: 15px;
         }
 
+        /* Layout Preview Styles */
+        .preview-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .preview-banner h2 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .sub-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 5px;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .sub-tab {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.3s;
+        }
+
+        .sub-tab:hover {
+            background: #e9ecef;
+        }
+
+        .sub-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .sub-content {
+            display: none;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            min-height: 400px;
+        }
+
+        .sub-content.active {
+            display: block;
+        }
+
+        /* Collapsible Section Styles */
+        .collapsible-section {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.3s;
+        }
+
+        .collapsible-header:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        }
+
+        .collapsible-header h4 {
+            margin: 0;
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .collapsible-toggle {
+            font-size: 1.2em;
+            color: #667eea;
+            transition: transform 0.3s;
+        }
+
+        .collapsible-header.active .collapsible-toggle {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: white;
+        }
+
+        .collapsible-content.active {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .collapsible-body {
+            padding: 20px;
+        }
+
+        /* Compact Table Styles */
+        .compact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .compact-table th,
+        .compact-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+
+        .compact-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .compact-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .compact-table .btn-small {
+            padding: 4px 10px;
+            font-size: 12px;
+            margin: 0 2px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #667eea;
+        }
+
+        .modal-close {
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .inline-config {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .inline-config .store-checkbox-list {
+            flex: 1;
+            margin: 0;
+        }
+
+        .confirm-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .confirm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -836,6 +1103,364 @@
 
         <!-- Manage Products Tab -->
         <div id="manage-products" class="tab-content">
+            <!-- Layout Preview Banner -->
+            <div class="preview-banner">
+                <h2>🎨 选择你喜欢的布局方案</h2>
+                <p>下方展示了4种不同的管理页面布局，请选择最适合你的方案</p>
+            </div>
+
+            <!-- Sub Tabs for Layout Options -->
+            <div class="sub-tabs">
+                <button class="sub-tab active" onclick="switchSubTab('layout1')">方案1: 折叠式</button>
+                <button class="sub-tab" onclick="switchSubTab('layout2')">方案2: 子标签页</button>
+                <button class="sub-tab" onclick="switchSubTab('layout3')">方案3: 表格+弹窗</button>
+                <button class="sub-tab" onclick="switchSubTab('layout4')">方案4: 混合优化</button>
+            </div>
+
+            <!-- Layout 1: Collapsible -->
+            <div id="layout1" class="sub-content active">
+                <h3 style="color: #667eea; margin-bottom: 20px;">📁 方案1: 折叠式布局</h3>
+                <p style="margin-bottom: 20px; color: #6c757d;">
+                    <strong>特点：</strong>所有区块默认折叠，点击标题展开。节省垂直空间，适合产品和商店数量较多的情况。
+                </p>
+
+                <!-- Demo Collapsible Sections -->
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                        <h4>📦 产品管理 (7个产品)</h4>
+                        <span class="collapsible-toggle">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <input type="text" class="search-box" placeholder="🔍 搜索产品...">
+                            <div class="product-list">
+                                <div class="product-item default">
+                                    <div>
+                                        <strong>CeraVe Hydrating Cleanser 88ml</strong>
+                                        <span class="product-badge">默认</span>
+                                        <span class="product-badge" style="background: #ff9800;">护肤</span>
+                                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">
+                                            ID: hydrating-88 | 记录数: 12
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="product-item">
+                                    <div>
+                                        <strong>iPhone 13 Pro</strong>
+                                        <span class="product-badge" style="background: #28a745;">自定义</span>
+                                        <span class="product-badge" style="background: #ff9800;">电子产品</span>
+                                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">
+                                            ID: iphone-13pro | 记录数: 5
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button class="btn-delete">删除</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                        <h4>🏪 商店管理 (4个商店)</h4>
+                        <span class="collapsible-toggle">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <p style="color: #6c757d;">商店列表内容...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                        <h4>🏷️ 品类管理 (4个品类)</h4>
+                        <span class="collapsible-toggle">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <p style="color: #6c757d;">品类列表内容...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                        <h4>🔗 产品商店配置</h4>
+                        <span class="collapsible-toggle">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <p style="color: #6c757d;">产品商店配置内容...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="confirm-button" onclick="confirmLayout('layout1')">
+                    ✅ 选择方案1
+                </button>
+            </div>
+
+            <!-- Layout 2: Sub Tabs -->
+            <div id="layout2" class="sub-content">
+                <h3 style="color: #667eea; margin-bottom: 20px;">📑 方案2: 子标签页布局</h3>
+                <p style="margin-bottom: 20px; color: #6c757d;">
+                    <strong>特点：</strong>在"管理产品"内再分4个子标签，每次只显示一个区域的内容。界面更清爽，但需要切换标签。
+                </p>
+
+                <div class="sub-tabs" style="margin-bottom: 30px;">
+                    <button class="sub-tab" style="background: #e9ecef;">📦 产品</button>
+                    <button class="sub-tab">🏪 商店</button>
+                    <button class="sub-tab">🏷️ 品类</button>
+                    <button class="sub-tab">🔗 配置</button>
+                </div>
+
+                <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; min-height: 300px;">
+                    <h4 style="color: #667eea;">📦 产品管理</h4>
+                    <p style="color: #6c757d; margin-top: 10px;">
+                        当前显示产品管理内容。点击其他标签可切换到商店管理、品类管理或配置页面。
+                    </p>
+                    <div style="margin-top: 20px;">
+                        <input type="text" class="search-box" placeholder="🔍 搜索产品...">
+                        <div class="product-list">
+                            <div class="product-item default">
+                                <div>
+                                    <strong>CeraVe Hydrating Cleanser 88ml</strong>
+                                    <span class="product-badge">默认</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="confirm-button" onclick="confirmLayout('layout2')">
+                    ✅ 选择方案2
+                </button>
+            </div>
+
+            <!-- Layout 3: Table + Modal -->
+            <div id="layout3" class="sub-content">
+                <h3 style="color: #667eea; margin-bottom: 20px;">📊 方案3: 紧凑表格 + 弹窗编辑</h3>
+                <p style="margin-bottom: 20px; color: #6c757d;">
+                    <strong>特点：</strong>用紧凑的表格显示所有内容，点击"配置"按钮弹出模态框进行编辑。最节省空间的方案。
+                </p>
+
+                <h4 style="color: #667eea; margin-top: 30px;">📦 产品列表</h4>
+                <input type="text" class="search-box" placeholder="🔍 搜索产品...">
+                <table class="compact-table">
+                    <thead>
+                        <tr>
+                            <th>产品名称</th>
+                            <th>品类</th>
+                            <th>商店数</th>
+                            <th>记录数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CeraVe Hydrating Cleanser 88ml</strong></td>
+                            <td><span class="product-badge" style="background: #ff9800;">护肤</span></td>
+                            <td>4</td>
+                            <td>12</td>
+                            <td>
+                                <button class="btn-secondary btn-small" onclick="openModal()">配置商店</button>
+                                <button class="btn-delete btn-small">删除</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>iPhone 13 Pro</strong></td>
+                            <td><span class="product-badge" style="background: #ff9800;">电子产品</span></td>
+                            <td>2</td>
+                            <td>5</td>
+                            <td>
+                                <button class="btn-secondary btn-small" onclick="openModal()">配置商店</button>
+                                <button class="btn-delete btn-small">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="color: #667eea; margin-top: 30px;">🏪 商店列表</h4>
+                <table class="compact-table">
+                    <thead>
+                        <tr>
+                            <th>商店名称</th>
+                            <th>类型</th>
+                            <th>记录数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Guardian</strong></td>
+                            <td><span class="product-badge">默认</span></td>
+                            <td>45</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button class="confirm-button" onclick="confirmLayout('layout3')">
+                    ✅ 选择方案3
+                </button>
+
+                <!-- Demo Modal -->
+                <div id="demoModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>配置商店 - CeraVe Hydrating Cleanser</h3>
+                            <button class="modal-close" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="store-checkbox-list">
+                            <div class="store-checkbox-item">
+                                <input type="checkbox" checked id="demo-cb1">
+                                <label for="demo-cb1">Guardian</label>
+                            </div>
+                            <div class="store-checkbox-item">
+                                <input type="checkbox" checked id="demo-cb2">
+                                <label for="demo-cb2">Watsons</label>
+                            </div>
+                            <div class="store-checkbox-item">
+                                <input type="checkbox" id="demo-cb3">
+                                <label for="demo-cb3">Shopee</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 20px; width: 100%;" onclick="closeModal()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layout 4: Hybrid Optimized -->
+            <div id="layout4" class="sub-content">
+                <h3 style="color: #667eea; margin-bottom: 20px;">⭐ 方案4: 混合优化方案（推荐）</h3>
+                <p style="margin-bottom: 20px; color: #6c757d;">
+                    <strong>特点：</strong>折叠式布局 + 搜索功能 + 紧凑表格 + 内联编辑。结合了所有方案的优点，最实用的选择。
+                </p>
+
+                <!-- Collapsible with Search -->
+                <div class="collapsible-section">
+                    <div class="collapsible-header active" onclick="toggleCollapsible(this)">
+                        <h4>📦 产品管理 (7个产品)</h4>
+                        <span class="collapsible-toggle">▼</span>
+                    </div>
+                    <div class="collapsible-content active">
+                        <div class="collapsible-body">
+                            <input type="text" class="search-box" placeholder="🔍 搜索产品名称或ID...">
+                            <table class="compact-table">
+                                <thead>
+                                    <tr>
+                                        <th>产品名称</th>
+                                        <th>品类</th>
+                                        <th>商店</th>
+                                        <th>记录</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>CeraVe Hydrating Cleanser 88ml</strong></td>
+                                        <td><span class="product-badge" style="background: #ff9800; font-size: 11px;">护肤</span></td>
+                                        <td style="text-align: center;">4</td>
+                                        <td style="text-align: center;">12</td>
+                                        <td>
+                                            <button class="btn-secondary btn-small" onclick="toggleInlineConfig(this)">编辑</button>
+                                            <button class="btn-delete btn-small">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr style="display: none;" class="inline-config-row">
+                                        <td colspan="5">
+                                            <div class="inline-config">
+                                                <strong>选择商店：</strong>
+                                                <div class="store-checkbox-list">
+                                                    <div class="store-checkbox-item">
+                                                        <input type="checkbox" checked>
+                                                        <label>Guardian</label>
+                                                    </div>
+                                                    <div class="store-checkbox-item">
+                                                        <input type="checkbox" checked>
+                                                        <label>Watsons</label>
+                                                    </div>
+                                                    <div class="store-checkbox-item">
+                                                        <input type="checkbox">
+                                                        <label>Caring</label>
+                                                    </div>
+                                                </div>
+                                                <button class="btn btn-primary btn-small">保存</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>iPhone 13 Pro</strong></td>
+                                        <td><span class="product-badge" style="background: #ff9800; font-size: 11px;">电子产品</span></td>
+                                        <td style="text-align: center;">2</td>
+                                        <td style="text-align: center;">5</td>
+                                        <td>
+                                            <button class="btn-secondary btn-small" onclick="toggleInlineConfig(this)">编辑</button>
+                                            <button class="btn-delete btn-small">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                        <h4>🏪 商店管理 (4个商店)</h4>
+                        <span class="collapsible-toggle">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <table class="compact-table">
+                                <thead>
+                                    <tr>
+                                        <th>商店名称</th>
+                                        <th>类型</th>
+                                        <th>记录数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Guardian</strong></td>
+                                        <td><span class="product-badge">默认</span></td>
+                                        <td>45</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                        <h4>🏷️ 品类管理 (4个品类)</h4>
+                        <span class="collapsible-toggle">▼</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <div class="collapsible-body">
+                            <p style="color: #6c757d;">品类列表（紧凑表格显示）...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="confirm-button" onclick="confirmLayout('layout4')">
+                    ⭐ 选择方案4（推荐）
+                </button>
+            </div>
+
+            <div class="warning-box" style="margin-top: 30px;">
+                <strong>💡 提示：</strong><br>
+                • 选择方案后，我会将真实的产品管理页面替换成你选择的布局<br>
+                • 如果你有其他想法或需要调整，请告诉我<br>
+                • 选定布局后，我还会实现"子品类"功能（如：护肤 → toner, serum, cream等）
+            </div>
+
+            <!-- Original content will be hidden for now -->
+            <div id="originalManageContent" style="display: none;">
             <div class="product-management">
                 <h3>➕ 添加新产品</h3>
                 <div class="add-product-form">
@@ -913,6 +1538,8 @@
 
             <div id="productStoresConfig" style="margin-top: 20px;">
                 <!-- Will be populated by JavaScript -->
+            </div>
+            </div>
             </div>
         </div>
 
@@ -2260,6 +2887,63 @@
             updateCategoryDropdown();
             updateProductStoresConfig();
             updateToBuyList();
+        }
+
+        // Demo Functions for Layout Preview
+        function switchSubTab(layoutId) {
+            // Hide all sub-contents
+            document.querySelectorAll('.sub-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.sub-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected sub-content
+            document.getElementById(layoutId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleCollapsible(headerElement) {
+            headerElement.classList.toggle('active');
+            const content = headerElement.nextElementSibling;
+            content.classList.toggle('active');
+        }
+
+        function openModal() {
+            document.getElementById('demoModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('demoModal').classList.remove('active');
+        }
+
+        function toggleInlineConfig(buttonElement) {
+            const currentRow = buttonElement.closest('tr');
+            const configRow = currentRow.nextElementSibling;
+
+            if (configRow && configRow.classList.contains('inline-config-row')) {
+                if (configRow.style.display === 'none') {
+                    configRow.style.display = 'table-row';
+                    buttonElement.textContent = '收起';
+                } else {
+                    configRow.style.display = 'none';
+                    buttonElement.textContent = '编辑';
+                }
+            }
+        }
+
+        function confirmLayout(layoutId) {
+            const layoutNames = {
+                'layout1': '方案1: 折叠式布局',
+                'layout2': '方案2: 子标签页布局',
+                'layout3': '方案3: 紧凑表格 + 弹窗编辑',
+                'layout4': '方案4: 混合优化方案'
+            };
+
+            if (confirm(`确定选择 ${layoutNames[layoutId]} 吗？\n\n选择后我会：\n1. 实现真实的管理页面布局\n2. 添加品牌名称（brand）字段\n3. 添加子品类功能（如：护肤 → toner, serum, cream等）\n4. 实现全局搜索功能（搜索品牌/品类/产品名称）`)) {
+                alert(`太好了！你选择了 ${layoutNames[layoutId]}\n\n请告诉我"开始实现"，我会根据你选择的方案进行完整开发。`);
+            }
         }
 
         // Initialize on load
