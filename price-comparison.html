@@ -184,6 +184,18 @@
             border: 2px solid #ffc107 !important;
         }
 
+        .remark-input {
+            background: #e3f2fd !important;
+            border: 2px solid #2196f3 !important;
+        }
+
+        .remark-cell {
+            background: #f0f8ff;
+            font-style: italic;
+            color: #1976d2;
+            font-size: 0.9em;
+        }
+
         .btn {
             padding: 12px 30px;
             border: none;
@@ -565,6 +577,7 @@
                     <li>在价格输入表格填入日期和价格</li>
                     <li><strong>Price列</strong>：填入原价</li>
                     <li><strong>Promo列（橙色）</strong>：如果有促销，填入计算后的单价</li>
+                    <li><strong>备注Remark（蓝色）</strong>：记录促销类型或其他备注（如：Buy 1 Free 1, 2nd -50%）</li>
                     <li>点击"保存价格记录"按钮</li>
                 </ul>
 
@@ -581,6 +594,13 @@
                     <strong>💡 重要提示：</strong><br>
                     Promo列填的是「单价」不是总价！这样才能公平比较不同促销和原价。<br>
                     例如：买一送一RM25.90，应该填入RM12.95 (25.90÷2)
+                </div>
+
+                <div class="tip-box" style="background: #e3f2fd; border-color: #2196f3;">
+                    <strong>📝 备注Remark字段：</strong><br>
+                    • 记录促销类型，方便日后查看（例如：Buy 1 Free 1, 2nd item -50%, Guardian member）<br>
+                    • 记录购买渠道或特殊优惠（例如：Shopee 12.12, App exclusive）<br>
+                    • 备注会显示在历史记录表格中，帮助你了解当时的促销活动
                 </div>
 
                 <div class="tip-box">
@@ -1093,14 +1113,15 @@
                 <!-- Price Entry Form -->
                 <div class="price-entry">
                     <h3>📝 记录价格</h3>
-                    <div class="form-row header" style="grid-template-columns: 150px repeat(${stores.length * 2}, 1fr);">
+                    <div class="form-row header" style="grid-template-columns: 150px repeat(${stores.length * 2}, 1fr) 200px;">
                         <div>日期</div>
                         ${stores.map(store => `
                             <div>${store}<br>Price</div>
                             <div>${store}<br>Promo</div>
                         `).join('')}
+                        <div>备注 Remark</div>
                     </div>
-                    <div class="form-row" style="grid-template-columns: 150px repeat(${stores.length * 2}, 1fr);">
+                    <div class="form-row" style="grid-template-columns: 150px repeat(${stores.length * 2}, 1fr) 200px;">
                         <input type="date" id="${productKey}-date" value="${new Date().toISOString().split('T')[0]}">
                         ${stores.map(store => {
                             const storeKey = store.toLowerCase().replace(/\s+/g, '-');
@@ -1109,6 +1130,7 @@
                                 <input type="number" id="${productKey}-${storeKey}-promo" placeholder="0.00" step="0.01" class="promo-input">
                             `;
                         }).join('')}
+                        <input type="text" id="${productKey}-remark" placeholder="e.g. Buy 1 Free 1" maxlength="100" class="remark-input">
                     </div>
                     <button class="btn btn-primary" onclick="savePriceEntry('${productKey}')">💾 保存价格记录</button>
                 </div>
@@ -1125,6 +1147,7 @@
                         <tr>
                             <th>Date</th>
                             ${stores.map(store => `<th>${store}</th>`).join('')}
+                            <th>Remark</th>
                             <th>Lowest</th>
                             <th>Best Store</th>
                             <th>Diff</th>
@@ -1192,9 +1215,12 @@
                 return;
             }
 
+            const remark = document.getElementById(`${productKey}-remark`).value.trim();
+
             const entry = {
                 date: date,
-                prices: {}
+                prices: {},
+                remark: remark || ''
             };
 
             stores.forEach(store => {
@@ -1224,6 +1250,7 @@
                 document.getElementById(`${productKey}-${storeKey}-price`).value = '';
                 document.getElementById(`${productKey}-${storeKey}-promo`).value = '';
             });
+            document.getElementById(`${productKey}-remark`).value = '';
 
             alert('价格记录已保存！');
         }
@@ -1306,7 +1333,8 @@
             const tbody = document.getElementById(`${productKey}-history`);
 
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #6c757d; padding: 30px;">暂无价格历史记录</td></tr>';
+                const totalCols = 6 + stores.length; // Date + Stores + Remark + Lowest + Best Store + Diff + Trend + Action
+                tbody.innerHTML = `<tr><td colspan="${totalCols}" style="text-align: center; color: #6c757d; padding: 30px;">暂无价格历史记录</td></tr>`;
                 return;
             }
 
@@ -1418,6 +1446,10 @@
                         html += '<td>-</td>';
                     }
                 });
+
+                // Remark column
+                const remarkText = entry.remark || '-';
+                html += `<td class="remark-cell">${remarkText}</td>`;
 
                 // Check if the lowest price in this row is all-time low
                 const lowestCellClass = lowest === allTimeLow ? 'all-time-low' : 'lowest-price';
