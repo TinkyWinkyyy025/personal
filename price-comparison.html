@@ -1395,36 +1395,29 @@
                 </div>
             </div>
 
-            <!-- Collapsible Section 3: Add New Store -->
+            <!-- Collapsible Section 3: Store Management (Unified) -->
             <div class="collapsible-section">
                 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                    <h4>🏪 添加新商店</h4>
+                    <h4 id="storeManagementHeader">🏪 商店管理</h4>
                     <span class="collapsible-toggle">▼</span>
                 </div>
                 <div class="collapsible-content">
                     <div class="collapsible-body">
+                        <!-- Add New Store -->
+                        <h4 style="color: #667eea; margin-bottom: 15px;">➕ 添加新商店</h4>
                         <div class="add-product-form">
                             <input type="text" id="newStoreName" placeholder="商店名称 (例如: Sephora)" maxlength="50">
                             <button class="btn btn-success" onclick="addNewStore()">添加商店</button>
                         </div>
-                        <div class="tip-box">
+                        <div class="tip-box" style="margin-bottom: 25px;">
                             <strong>💡 提示：</strong><br>
                             • 商店名称可以是任何零售商或线上平台<br>
                             • 添加后可以在产品商店配置中为每个产品选择显示此商店<br>
                             • 所有商店都可以删除和编辑
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Collapsible Section 4: Store List -->
-            <div class="collapsible-section">
-                <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                    <h4 id="storeListHeader">🏪 商店列表</h4>
-                    <span class="collapsible-toggle">▼</span>
-                </div>
-                <div class="collapsible-content">
-                    <div class="collapsible-body">
+                        <!-- Store List -->
+                        <h4 style="color: #667eea; margin-bottom: 15px; margin-top: 25px;">📋 商店列表</h4>
                         <input type="text" id="storeSearchBox" class="search-box" placeholder="🔍 搜索商店..." oninput="filterStoreTable()">
                         <div id="storeTableContainer">
                             <!-- Will be populated by updateStoreTable() -->
@@ -1433,56 +1426,32 @@
                 </div>
             </div>
 
-            <!-- Collapsible Section 5: Add New Category -->
+            <!-- Collapsible Section 5: Category & Subcategory Management (Unified) -->
             <div class="collapsible-section">
                 <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                    <h4>🏷️ 添加新品类</h4>
+                    <h4 id="categoryManagementHeader">🏷️ 品类管理</h4>
                     <span class="collapsible-toggle">▼</span>
                 </div>
                 <div class="collapsible-content">
                     <div class="collapsible-body">
+                        <!-- Add New Category -->
+                        <h4 style="color: #667eea; margin-bottom: 15px;">➕ 添加新品类</h4>
                         <div class="add-product-form">
                             <input type="text" id="newCategoryKey" placeholder="品类ID (例如: skincare, makeup)" maxlength="50">
                             <input type="text" id="newCategoryName" placeholder="品类名称 (例如: 护肤品, 美妆)" maxlength="100">
                             <input type="text" id="newCategorySubcategories" placeholder="子品类 (用逗号分割，例如: toner, serum, cream)" maxlength="300">
                             <button class="btn btn-success" onclick="addNewCategory()">添加品类</button>
                         </div>
-                        <div class="tip-box">
+                        <div class="tip-box" style="margin-bottom: 25px;">
                             <strong>💡 提示：</strong><br>
                             • 品类ID：用英文和数字，不要有空格 (例如: skincare, makeup, electronics)<br>
                             • 品类名称：可以使用中文，这是显示在分组中的名称<br>
                             • 子品类：用逗号分割，一次性添加多个子品类（例如：toner, serum, cream）<br>
-                            • 子品类可以留空，稍后再添加<br>
-                            • 所有品类和子品类都可以删除和编辑
+                            • 子品类可以留空，稍后再添加
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Collapsible Section 6: Category List -->
-            <div class="collapsible-section">
-                <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                    <h4 id="categoryListHeader">🏷️ 品类列表</h4>
-                    <span class="collapsible-toggle">▼</span>
-                </div>
-                <div class="collapsible-content">
-                    <div class="collapsible-body">
-                        <input type="text" id="categorySearchBox" class="search-box" placeholder="🔍 搜索品类..." oninput="filterCategoryTable()">
-                        <div id="categoryTableContainer">
-                            <!-- Will be populated by updateCategoryTable() -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Collapsible Section 7: Subcategory Management -->
-            <div class="collapsible-section">
-                <div class="collapsible-header" onclick="toggleCollapsible(this)">
-                    <h4>🔖 子品类管理</h4>
-                    <span class="collapsible-toggle">▼</span>
-                </div>
-                <div class="collapsible-content">
-                    <div class="collapsible-body">
+                        <!-- Add Subcategories to Existing Category -->
+                        <h4 style="color: #667eea; margin-bottom: 15px; margin-top: 25px;">➕ 为现有品类添加子品类</h4>
                         <div class="add-product-form">
                             <select id="subcategoryTargetCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
                                 <option value="">选择品类...</option>
@@ -1491,14 +1460,23 @@
                             <input type="text" id="newSubcategoryName" placeholder="子品类名称 (例如: Essence, Ampoule)" maxlength="50">
                             <button class="btn btn-success" onclick="addSubcategory()">添加子品类</button>
                         </div>
-                        <div class="tip-box">
+                        <div class="tip-box" style="margin-bottom: 25px;">
                             <strong>💡 提示：</strong><br>
-                            • 先选择要添加子品类的品类（如：护肤、美妆等）<br>
-                            • 然后输入新的子品类名称<br>
-                            • 每个品类可以有多个子品类<br>
-                            • 所有子品类都可以删除和编辑
+                            • 先选择要添加子品类的品类<br>
+                            • 输入新的子品类名称<br>
+                            • 支持批量添加，可以用逗号分割
                         </div>
-                        <div id="subcategoryListContainer" style="margin-top: 20px;">
+
+                        <!-- Category List -->
+                        <h4 style="color: #667eea; margin-bottom: 15px; margin-top: 25px;">📋 品类列表</h4>
+                        <input type="text" id="categorySearchBox" class="search-box" placeholder="🔍 搜索品类..." oninput="filterCategoryTable()">
+                        <div id="categoryTableContainer">
+                            <!-- Will be populated by updateCategoryTable() -->
+                        </div>
+
+                        <!-- Subcategory List -->
+                        <h4 style="color: #667eea; margin-bottom: 15px; margin-top: 25px;">🔖 子品类列表</h4>
+                        <div id="subcategoryListContainer">
                             <!-- Will be populated by updateSubcategoryList() -->
                         </div>
                     </div>
