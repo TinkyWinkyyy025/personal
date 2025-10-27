@@ -1285,7 +1285,6 @@
                 <div class="collapsible-content active">
                     <div class="collapsible-body">
                         <div class="add-product-form">
-                            <input type="text" id="newProductKey" placeholder="产品ID (例如: phone-13pro)" maxlength="50">
                             <input type="text" id="newProductName" placeholder="产品名称 (例如: iPhone 13 Pro)" maxlength="100">
                             <input type="text" id="newProductBrand" placeholder="品牌 (例如: Apple, Samsung)" maxlength="50">
                             <select id="newProductCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;" onchange="updateSubcategoryDropdown()">
@@ -1300,11 +1299,11 @@
                         </div>
                         <div class="tip-box">
                             <strong>💡 提示：</strong><br>
-                            • 产品ID：用英文和数字，不要有空格 (例如: phone-13pro, book-cooking-101)<br>
                             • 产品名称：可以使用中文，这是显示在标签页的名称<br>
                             • 品牌：产品的品牌名称，用于搜索和筛选<br>
                             • 品类：选择产品所属的大品类（如：护肤、美妆等）<br>
                             • 子品类：选择具体的子分类（如：Cleanser, Toner等），需先选择品类<br>
+                            • 产品ID会自动生成<br>
                             • 所有产品都可以编辑和删除
                         </div>
                     </div>
@@ -2022,15 +2021,14 @@
 
         // Add new product
         function addNewProduct() {
-            const key = document.getElementById('newProductKey').value.trim();
             const name = document.getElementById('newProductName').value.trim();
             const brand = document.getElementById('newProductBrand').value.trim();
             const category = document.getElementById('newProductCategory').value;
             const subcategory = document.getElementById('newProductSubcategory').value;
 
             // Validation
-            if (!key || !name) {
-                alert('请填写产品ID和产品名称！');
+            if (!name) {
+                alert('请填写产品名称！');
                 return;
             }
 
@@ -2049,17 +2047,10 @@
                 return;
             }
 
-            // Check if key contains spaces
-            if (key.includes(' ')) {
-                alert('产品ID不能包含空格！请使用连字符 (-) 或下划线 (_)');
-                return;
-            }
-
-            // Check if product already exists
-            if (products[key]) {
-                alert('产品ID已存在！请使用不同的ID');
-                return;
-            }
+            // Auto-generate unique product ID
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000);
+            const key = `product-${timestamp}-${random}`;
 
             // Add to custom products
             customProducts[key] = name;
@@ -2083,7 +2074,6 @@
             saveProductStores();
 
             // Clear form
-            document.getElementById('newProductKey').value = '';
             document.getElementById('newProductName').value = '';
             document.getElementById('newProductBrand').value = '';
             document.getElementById('newProductCategory').value = '';
@@ -2497,27 +2487,37 @@
                 <!-- Price Entry Form -->
                 <div class="price-entry" ${productStoresList.length === 0 ? 'style="display: none;"' : ''}>
                     <h3>📝 记录价格</h3>
-                    <div class="form-row header" style="grid-template-columns: 150px repeat(${productStoresList.length * 2}, 1fr) 200px;">
-                        <div>日期</div>
-                        ${productStoresList.map(store => `
-                            <div>${store}<br>原价</div>
-                            <div>${store}<br>当前价</div>
-                        `).join('')}
-                        <div>备注 Remark</div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">📅 日期</label>
+                        <input type="date" id="${productKey}-date" value="${new Date().toISOString().split('T')[0]}" style="width: 200px; padding: 10px; border: 2px solid #667eea; border-radius: 5px;">
                     </div>
-                    <div class="form-row" style="grid-template-columns: 150px repeat(${productStoresList.length * 2}, 1fr) 200px;">
-                        <input type="date" id="${productKey}-date" value="${new Date().toISOString().split('T')[0]}">
-                        ${productStoresList.map(store => {
-                            const storeKey = store.toLowerCase().replace(/\s+/g, '-');
-                            return `
-                                <input type="number" id="${productKey}-${storeKey}-price" placeholder="0.00" step="0.01">
-                                <input type="number" id="${productKey}-${storeKey}-promo" placeholder="0.00" step="0.01" class="promo-input">
-                            `;
-                        }).join('')}
-                        <input type="text" id="${productKey}-remark" placeholder="e.g. Buy 1 Free 1" maxlength="100" class="remark-input">
+
+                    <div id="${productKey}-price-rows" style="margin-bottom: 20px;">
+                        <!-- Price rows will be added here -->
                     </div>
+
+                    <button class="btn btn-success" onclick="addPriceRow('${productKey}')" style="margin-bottom: 15px;">
+                        ➕ 添加商店价格
+                    </button>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">📝 备注 Remark</label>
+                        <input type="text" id="${productKey}-remark" placeholder="e.g. Buy 1 Free 1" maxlength="100" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                    </div>
+
                     <button class="btn btn-primary" onclick="savePriceEntry('${productKey}')">💾 保存价格记录</button>
                 </div>
+
+                <script>
+                    // Initialize with one empty row
+                    (function() {
+                        setTimeout(() => {
+                            if (document.getElementById('${productKey}-price-rows').children.length === 0) {
+                                addPriceRow('${productKey}');
+                            }
+                        }, 100);
+                    })();
+                </script>
 
                 <!-- Statistics Cards -->
                 <div class="summary-cards" id="${productKey}-stats">
@@ -2596,6 +2596,50 @@
             document.getElementById(`result${type}`).textContent = resultText;
         }
 
+        // Add price row for a product
+        let priceRowCounter = 0;
+        function addPriceRow(productKey) {
+            const container = document.getElementById(`${productKey}-price-rows`);
+            const productStoresList = productStores[productKey] || [];
+
+            const rowId = `${productKey}-row-${priceRowCounter++}`;
+
+            const row = document.createElement('div');
+            row.id = rowId;
+            row.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px;';
+
+            row.innerHTML = `
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">🏪 商店</label>
+                    <select class="store-select" style="width: 100%; padding: 10px; border: 2px solid #667eea; border-radius: 5px; font-size: 14px;">
+                        <option value="">选择商店...</option>
+                        ${productStoresList.map(store => `<option value="${store}">${store}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">💵 原价</label>
+                    <input type="number" class="regular-price" placeholder="0.00" step="0.01" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px;">🔥 当前价</label>
+                    <input type="number" class="promo-price" placeholder="0.00" step="0.01" style="width: 100%; padding: 10px; border: 2px solid #ffc107; border-radius: 5px;">
+                </div>
+                <div style="padding-top: 28px;">
+                    <button class="btn-delete" onclick="removePriceRow('${rowId}')" style="padding: 10px 15px;">🗑️</button>
+                </div>
+            `;
+
+            container.appendChild(row);
+        }
+
+        // Remove price row
+        function removePriceRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
+            }
+        }
+
         // Save price entry
         function savePriceEntry(productKey) {
             const date = document.getElementById(`${productKey}-date`).value;
@@ -2605,7 +2649,7 @@
             }
 
             const remark = document.getElementById(`${productKey}-remark`).value.trim();
-            const productStoresList = productStores[productKey] || [];
+            const container = document.getElementById(`${productKey}-price-rows`);
 
             const entry = {
                 date: date,
@@ -2613,19 +2657,32 @@
                 remark: remark || ''
             };
 
-            productStoresList.forEach(store => {
-                const storeKey = store.toLowerCase().replace(/\s+/g, '-');
-                const priceInput = document.getElementById(`${productKey}-${storeKey}-price`);
-                const promoInput = document.getElementById(`${productKey}-${storeKey}-promo`);
+            // Collect prices from all rows
+            const rows = container.querySelectorAll('[id^="' + productKey + '-row-"]');
+            let hasData = false;
 
-                const price = priceInput ? parseFloat(priceInput.value) || null : null;
-                const promo = promoInput ? parseFloat(promoInput.value) || null : null;
+            rows.forEach(row => {
+                const storeSelect = row.querySelector('.store-select');
+                const regularInput = row.querySelector('.regular-price');
+                const promoInput = row.querySelector('.promo-price');
 
-                entry.prices[store] = {
-                    regular: price,
-                    promo: promo
-                };
+                const store = storeSelect.value;
+                const regular = parseFloat(regularInput.value) || null;
+                const promo = parseFloat(promoInput.value) || null;
+
+                if (store && (regular !== null || promo !== null)) {
+                    entry.prices[store] = {
+                        regular: regular,
+                        promo: promo
+                    };
+                    hasData = true;
+                }
             });
+
+            if (!hasData) {
+                alert('请至少填写一个商店的价格！');
+                return;
+            }
 
             // Add to data
             if (!priceData[productKey]) {
@@ -2638,14 +2695,11 @@
             updateProductPage(productKey);
 
             // Clear form
-            productStoresList.forEach(store => {
-                const storeKey = store.toLowerCase().replace(/\s+/g, '-');
-                const priceInput = document.getElementById(`${productKey}-${storeKey}-price`);
-                const promoInput = document.getElementById(`${productKey}-${storeKey}-promo`);
-                if (priceInput) priceInput.value = '';
-                if (promoInput) promoInput.value = '';
-            });
+            container.innerHTML = '';
             document.getElementById(`${productKey}-remark`).value = '';
+
+            // Add one empty row
+            addPriceRow(productKey);
         }
 
         // Update product page
