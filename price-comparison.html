@@ -1441,16 +1441,18 @@
                 <div class="collapsible-content">
                     <div class="collapsible-body">
                         <div class="add-product-form">
-                            <input type="text" id="newCategoryKey" placeholder="品类ID (例如: electronics, books)" maxlength="50">
-                            <input type="text" id="newCategoryName" placeholder="品类名称 (例如: 电子产品, 书籍)" maxlength="100">
+                            <input type="text" id="newCategoryKey" placeholder="品类ID (例如: skincare, makeup)" maxlength="50">
+                            <input type="text" id="newCategoryName" placeholder="品类名称 (例如: 护肤品, 美妆)" maxlength="100">
+                            <input type="text" id="newCategorySubcategories" placeholder="子品类 (用逗号分割，例如: toner, serum, cream)" maxlength="300">
                             <button class="btn btn-success" onclick="addNewCategory()">添加品类</button>
                         </div>
                         <div class="tip-box">
                             <strong>💡 提示：</strong><br>
-                            • 品类ID：用英文和数字，不要有空格 (例如: electronics, books, food)<br>
+                            • 品类ID：用英文和数字，不要有空格 (例如: skincare, makeup, electronics)<br>
                             • 品类名称：可以使用中文，这是显示在分组中的名称<br>
-                            • 所有品类都可以删除和编辑<br>
-                            • 可以添加各种品类来管理不同类型的产品（如：电子产品、书籍、食品、护肤、美妆等）
+                            • 子品类：用逗号分割，一次性添加多个子品类（例如：toner, serum, cream）<br>
+                            • 子品类可以留空，稍后再添加<br>
+                            • 所有品类和子品类都可以删除和编辑
                         </div>
                     </div>
                 </div>
@@ -1775,6 +1777,7 @@
         function addNewCategory() {
             const key = document.getElementById('newCategoryKey').value.trim();
             const name = document.getElementById('newCategoryName').value.trim();
+            const subcategoriesInput = document.getElementById('newCategorySubcategories').value.trim();
 
             // Validation
             if (!key || !name) {
@@ -1798,15 +1801,47 @@
             customCategories[key] = name;
             categories[key] = name;
 
+            // Process subcategories if provided
+            if (subcategoriesInput) {
+                // Split by comma and trim each subcategory
+                const subcategoryList = subcategoriesInput
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(s => s.length > 0); // Remove empty strings
+
+                if (subcategoryList.length > 0) {
+                    // Initialize subcategories array for this category if not exists
+                    if (!subcategories[key]) {
+                        subcategories[key] = [];
+                    }
+
+                    // Add all subcategories
+                    subcategoryList.forEach(subcat => {
+                        if (!subcategories[key].includes(subcat)) {
+                            subcategories[key].push(subcat);
+                        }
+                    });
+
+                    // Save subcategories
+                    saveSubcategories();
+                }
+            }
+
             // Save and refresh
             saveCustomCategories();
 
             // Clear form
             document.getElementById('newCategoryKey').value = '';
             document.getElementById('newCategoryName').value = '';
+            document.getElementById('newCategorySubcategories').value = '';
 
             // Refresh the page
-            alert('品类添加成功！');
+            const subcatCount = subcategories[key] ? subcategories[key].length : 0;
+            if (subcatCount > 0) {
+                alert(`品类添加成功！同时创建了 ${subcatCount} 个子品类。`);
+            } else {
+                alert('品类添加成功！');
+            }
             initializeApp();
         }
 
