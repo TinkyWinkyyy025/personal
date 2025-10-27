@@ -2435,8 +2435,18 @@
             });
 
             // Show selected tab
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            const targetTab = document.getElementById(tabId);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+
+            // Highlight the corresponding nav button
+            const navButtons = document.querySelectorAll('.tab');
+            navButtons.forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${tabId}'`)) {
+                    btn.classList.add('active');
+                }
+            });
 
             // Update based on tab
             if (tabId === 'summary') {
