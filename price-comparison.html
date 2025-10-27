@@ -2508,17 +2508,6 @@
                     <button class="btn btn-primary" onclick="savePriceEntry('${productKey}')">💾 保存价格记录</button>
                 </div>
 
-                <script>
-                    // Initialize with one empty row
-                    (function() {
-                        setTimeout(() => {
-                            if (document.getElementById('${productKey}-price-rows').children.length === 0) {
-                                addPriceRow('${productKey}');
-                            }
-                        }, 100);
-                    })();
-                </script>
-
                 <!-- Statistics Cards -->
                 <div class="summary-cards" id="${productKey}-stats">
                     <!-- Will be populated by JavaScript -->
@@ -2551,6 +2540,16 @@
             `;
 
             updateProductPage(productKey);
+
+            // Initialize with one empty row for price entry
+            if (productStoresList.length > 0) {
+                setTimeout(() => {
+                    const container = document.getElementById(`${productKey}-price-rows`);
+                    if (container && container.children.length === 0) {
+                        addPriceRow(productKey);
+                    }
+                }, 100);
+            }
         }
 
         // Global promo calculator
