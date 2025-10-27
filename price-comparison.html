@@ -2569,14 +2569,7 @@
 
         // Generate product tabs dynamically grouped by category
         function generateTabs() {
-            const tabsContainer = document.getElementById('tabsContainer');
             const productTabsContainer = document.getElementById('productTabsContainer');
-
-            // Clear existing product tabs and category separators
-            const existingProductTabs = tabsContainer.querySelectorAll('.product-tab');
-            const existingCategorySeparators = tabsContainer.querySelectorAll('.category-separator');
-            existingProductTabs.forEach(tab => tab.remove());
-            existingCategorySeparators.forEach(sep => sep.remove());
 
             // Clear product tab content
             productTabsContainer.innerHTML = '';
@@ -2591,27 +2584,13 @@
                 productsByCategory[categoryKey].push(key);
             });
 
-            // Add tabs grouped by category
+            // Create tab content (but don't add tab buttons - using sidebar navigation)
             Object.keys(categories).forEach(categoryKey => {
                 const categoryProducts = productsByCategory[categoryKey] || [];
 
                 if (categoryProducts.length > 0) {
-                    // Add category separator
-                    const categorySeparator = document.createElement('div');
-                    categorySeparator.className = 'category-separator';
-                    categorySeparator.textContent = `📁 ${categories[categoryKey]}`;
-                    tabsContainer.appendChild(categorySeparator);
-
-                    // Add product tabs for this category
+                    // Add product tab content only (no tab buttons)
                     categoryProducts.forEach(key => {
-                        // Add tab button
-                        const tabButton = document.createElement('button');
-                        tabButton.className = 'tab product-tab';
-                        tabButton.textContent = products[key];
-                        tabButton.onclick = () => switchTab(key);
-                        tabsContainer.appendChild(tabButton);
-
-                        // Add tab content
                         const tabContent = document.createElement('div');
                         tabContent.id = key;
                         tabContent.className = 'tab-content';
@@ -2624,21 +2603,7 @@
             // Handle uncategorized products
             const uncategorizedProducts = productsByCategory['uncategorized'] || [];
             if (uncategorizedProducts.length > 0) {
-                // Add uncategorized separator
-                const categorySeparator = document.createElement('div');
-                categorySeparator.className = 'category-separator';
-                categorySeparator.textContent = '📁 未分类';
-                tabsContainer.appendChild(categorySeparator);
-
                 uncategorizedProducts.forEach(key => {
-                    // Add tab button
-                    const tabButton = document.createElement('button');
-                    tabButton.className = 'tab product-tab';
-                    tabButton.textContent = products[key];
-                    tabButton.onclick = () => switchTab(key);
-                    tabsContainer.appendChild(tabButton);
-
-                    // Add tab content
                     const tabContent = document.createElement('div');
                     tabContent.id = key;
                     tabContent.className = 'tab-content';
