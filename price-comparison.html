@@ -1205,10 +1205,10 @@
                     <li>所有产品的价格输入表格会自动增加新商店的列</li>
                 </ul>
 
-                <h4>删除自定义产品或商店</h4>
+                <h4>删除产品或商店</h4>
                 <ul style="margin-left: 25px; margin-top: 10px;">
                     <li>在"管理产品"页面找到要删除的项目</li>
-                    <li>点击"删除"按钮（默认产品和商店无法删除）</li>
+                    <li>点击"删除"按钮</li>
                     <li>确认删除后，数据将被删除</li>
                 </ul>
 
@@ -1372,7 +1372,7 @@
                             • 品牌：产品的品牌名称，用于搜索和筛选<br>
                             • 品类：选择产品所属的大品类（如：护肤、美妆等）<br>
                             • 子品类：选择具体的子分类（如：Cleanser, Toner等），需先选择品类<br>
-                            • 默认产品不能删除，但你可以添加自定义产品
+                            • 所有产品都可以编辑和删除
                         </div>
                     </div>
                 </div>
@@ -1410,7 +1410,7 @@
                             <strong>💡 提示：</strong><br>
                             • 商店名称可以是任何零售商或线上平台<br>
                             • 添加后可以在产品商店配置中为每个产品选择显示此商店<br>
-                            • 默认商店不能删除
+                            • 所有商店都可以删除和编辑
                         </div>
                     </div>
                 </div>
@@ -1449,8 +1449,8 @@
                             <strong>💡 提示：</strong><br>
                             • 品类ID：用英文和数字，不要有空格 (例如: electronics, books, food)<br>
                             • 品类名称：可以使用中文，这是显示在分组中的名称<br>
-                            • 默认品类（护肤、美妆、衣服、配饰）不能删除<br>
-                            • 可以添加自定义品类来管理不同类型的产品（如：电子产品、书籍、食品等）
+                            • 所有品类都可以删除和编辑<br>
+                            • 可以添加各种品类来管理不同类型的产品（如：电子产品、书籍、食品、护肤、美妆等）
                         </div>
                     </div>
                 </div>
@@ -1493,7 +1493,7 @@
                             • 先选择要添加子品类的品类（如：护肤、美妆等）<br>
                             • 然后输入新的子品类名称<br>
                             • 每个品类可以有多个子品类<br>
-                            • 默认子品类不能删除，但可以添加自定义子品类
+                            • 所有子品类都可以删除和编辑
                         </div>
                         <div id="subcategoryListContainer" style="margin-top: 20px;">
                             <!-- Will be populated by updateSubcategoryList() -->
@@ -1517,57 +1517,23 @@
     </div> <!-- Close app-layout -->
 
     <script>
-        // Default categories (cannot be deleted)
-        const defaultCategories = {
-            'skincare': '护肤',
-            'makeup': '美妆',
-            'clothing': '衣服',
-            'accessories': '配饰'
-        };
+        // Default categories (now empty - all items can be deleted and edited)
+        const defaultCategories = {};
 
-        // Default subcategories for each category
-        const defaultSubcategories = {
-            'skincare': ['Cleanser', 'Toner', 'Serum', 'Moisturizer', 'Sunscreen', 'Eye Cream', 'Mask'],
-            'makeup': ['Foundation', 'Concealer', 'Powder', 'Blush', 'Eyeshadow', 'Lipstick', 'Mascara'],
-            'clothing': ['T-Shirt', 'Pants', 'Dress', 'Jacket', 'Shoes'],
-            'accessories': ['Bag', 'Watch', 'Jewelry', 'Hat', 'Belt']
-        };
+        // Default subcategories for each category (now empty)
+        const defaultSubcategories = {};
 
-        // Default products (cannot be deleted)
-        const defaultProducts = {
-            'hydrating-88': 'CeraVe Hydrating Cleanser 88ml',
-            'hydrating-234': 'CeraVe Hydrating Cleanser 234ml',
-            'hydrating-400': 'CeraVe Hydrating Cleanser 400ml',
-            'foaming-88': 'CeraVe Foaming Cleanser 88ml',
-            'foaming-234': 'CeraVe Foaming Cleanser 234ml',
-            'foaming-400': 'CeraVe Foaming Cleanser 400ml',
-            'garnier': 'Garnier Rose Water 400ml'
-        };
+        // Default products (now empty - all products can be deleted and edited)
+        const defaultProducts = {};
 
-        // Default brands for default products
-        const defaultProductBrands = {
-            'hydrating-88': 'CeraVe',
-            'hydrating-234': 'CeraVe',
-            'hydrating-400': 'CeraVe',
-            'foaming-88': 'CeraVe',
-            'foaming-234': 'CeraVe',
-            'foaming-400': 'CeraVe',
-            'garnier': 'Garnier'
-        };
+        // Default brands for default products (now empty)
+        const defaultProductBrands = {};
 
-        // Default subcategories for default products
-        const defaultProductSubcategories = {
-            'hydrating-88': 'Cleanser',
-            'hydrating-234': 'Cleanser',
-            'hydrating-400': 'Cleanser',
-            'foaming-88': 'Cleanser',
-            'foaming-234': 'Cleanser',
-            'foaming-400': 'Cleanser',
-            'garnier': 'Toner'
-        };
+        // Default subcategories for default products (now empty)
+        const defaultProductSubcategories = {};
 
-        // Default stores (cannot be deleted)
-        const defaultStores = ['Guardian', 'Watsons', 'Caring', 'Shopee'];
+        // Default stores (now empty - all stores can be deleted and edited)
+        const defaultStores = [];
 
         // Initialize data structure
         let priceData = {};
@@ -1846,11 +1812,6 @@
 
         // Delete category
         function deleteCategory(key) {
-            if (defaultCategories[key]) {
-                alert('默认品类不能删除！');
-                return;
-            }
-
             // Check if any products use this category
             const productsUsingCategory = Object.keys(productCategories).filter(
                 productKey => productCategories[productKey] === key
@@ -2000,12 +1961,6 @@
 
         // Delete subcategory
         function deleteSubcategory(categoryKey, subcategoryName) {
-            // Check if it's a default subcategory
-            if (defaultSubcategories[categoryKey] && defaultSubcategories[categoryKey].includes(subcategoryName)) {
-                alert('默认子品类不能删除！');
-                return;
-            }
-
             // Check if any products are using this subcategory
             let productsUsingIt = [];
             Object.keys(productSubcategories).forEach(productKey => {
@@ -2044,15 +1999,9 @@
                 html += `<div style="display: flex; flex-wrap: wrap; gap: 10px;">`;
 
                 subcatList.forEach(subcat => {
-                    const isDefault = defaultSubcategories[categoryKey] && defaultSubcategories[categoryKey].includes(subcat);
-
-                    html += `<div style="display: inline-flex; align-items: center; padding: 8px 12px; background: ${isDefault ? '#f8f9fa' : '#e3f2fd'}; border-radius: 5px; border: 1px solid ${isDefault ? '#dee2e6' : '#90caf9'};">`;
+                    html += `<div style="display: inline-flex; align-items: center; padding: 8px 12px; background: #e3f2fd; border-radius: 5px; border: 1px solid #90caf9;">`;
                     html += `<span style="margin-right: 8px;">${subcat}</span>`;
-                    if (isDefault) {
-                        html += `<span class="product-badge" style="font-size: 10px; padding: 2px 6px;">默认</span>`;
-                    } else {
-                        html += `<button class="btn-delete" style="padding: 2px 8px; font-size: 11px; margin: 0;" onclick="deleteSubcategory('${categoryKey}', '${subcat}')">删除</button>`;
-                    }
+                    html += `<button class="btn-delete" style="padding: 2px 8px; font-size: 11px; margin: 0;" onclick="deleteSubcategory('${categoryKey}', '${subcat}')">删除</button>`;
                     html += `</div>`;
                 });
 
@@ -2099,11 +2048,6 @@
 
         // Delete store
         function deleteStore(storeName) {
-            if (defaultStores.includes(storeName)) {
-                alert('默认商店不能删除！');
-                return;
-            }
-
             if (confirm(`确定要删除商店 "${storeName}" 吗？\n这不会删除价格记录，但该商店的列将不再显示。`)) {
                 // Remove from custom stores
                 const index = customStores.indexOf(storeName);
@@ -2302,11 +2246,6 @@
 
         // Delete product
         function deleteProduct(key) {
-            if (defaultProducts[key]) {
-                alert('默认产品不能删除！');
-                return;
-            }
-
             if (confirm(`确定要删除产品 "${products[key]}" 吗？\n这将删除该产品的所有价格记录！`)) {
                 // Remove from custom products
                 delete customProducts[key];
@@ -2377,7 +2316,6 @@
             html += '</tr></thead><tbody id="productTableBody">';
 
             Object.keys(products).forEach(key => {
-                const isDefault = defaultProducts[key] !== undefined;
                 const name = products[key];
                 const brand = productBrands[key] || '-';
                 const recordCount = priceData[key] ? priceData[key].length : 0;
@@ -2387,7 +2325,7 @@
                 const storeCount = (productStores[key] || []).length;
 
                 html += `<tr id="product-row-${key}">`;
-                html += `<td><strong>${name}</strong> ${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}</td>`;
+                html += `<td><strong>${name}</strong></td>`;
                 html += `<td>${brand}</td>`;
                 html += `<td><span class="product-badge" style="background: #ff9800; font-size: 11px;">${categoryName}</span></td>`;
                 html += `<td>${subcategory}</td>`;
@@ -2395,9 +2333,7 @@
                 html += `<td style="text-align: center;">${recordCount}</td>`;
                 html += `<td>`;
                 html += `<button class="btn-secondary btn-small" onclick="toggleProductStoreConfig('${key}')">编辑商店</button>`;
-                if (!isDefault) {
-                    html += `<button class="btn-delete btn-small" onclick="deleteProduct('${key}')">删除</button>`;
-                }
+                html += `<button class="btn-delete btn-small" onclick="deleteProduct('${key}')">删除</button>`;
                 html += `</td></tr>`;
 
                 // Inline config row (hidden by default)
@@ -2491,14 +2427,11 @@
 
             let html = '<table class="compact-table"><thead><tr>';
             html += '<th>商店名称</th>';
-            html += '<th>类型</th>';
             html += '<th>使用数</th>';
             html += '<th>操作</th>';
             html += '</tr></thead><tbody id="storeTableBody">';
 
             stores.forEach(store => {
-                const isDefault = defaultStores.includes(store);
-
                 // Count products using this store
                 let usageCount = 0;
                 Object.keys(productStores).forEach(productKey => {
@@ -2509,14 +2442,9 @@
 
                 html += '<tr>';
                 html += `<td><strong>${store}</strong></td>`;
-                html += `<td>${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}</td>`;
                 html += `<td style="text-align: center;">${usageCount}</td>`;
                 html += `<td>`;
-                if (!isDefault) {
-                    html += `<button class="btn-delete btn-small" onclick="deleteStore('${store}')">删除</button>`;
-                } else {
-                    html += '-';
-                }
+                html += `<button class="btn-delete btn-small" onclick="deleteStore('${store}')">删除</button>`;
                 html += `</td></tr>`;
             });
 
@@ -2556,13 +2484,11 @@
 
             let html = '<table class="compact-table"><thead><tr>';
             html += '<th>品类名称</th>';
-            html += '<th>类型</th>';
             html += '<th>产品数</th>';
             html += '<th>操作</th>';
             html += '</tr></thead><tbody id="categoryTableBody">';
 
             Object.keys(categories).forEach(key => {
-                const isDefault = defaultCategories[key] !== undefined;
                 const name = categories[key];
 
                 // Count products in this category
@@ -2575,14 +2501,9 @@
 
                 html += '<tr>';
                 html += `<td><strong>${name}</strong><div style="font-size: 0.85em; color: #6c757d;">ID: ${key}</div></td>`;
-                html += `<td>${isDefault ? '<span class="product-badge">默认</span>' : '<span class="product-badge" style="background: #28a745;">自定义</span>'}</td>`;
                 html += `<td style="text-align: center;">${productCount}</td>`;
                 html += `<td>`;
-                if (!isDefault) {
-                    html += `<button class="btn-delete btn-small" onclick="deleteCategory('${key}')">删除</button>`;
-                } else {
-                    html += '-';
-                }
+                html += `<button class="btn-delete btn-small" onclick="deleteCategory('${key}')">删除</button>`;
                 html += `</td></tr>`;
             });
 
