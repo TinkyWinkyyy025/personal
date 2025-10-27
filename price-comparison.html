@@ -164,26 +164,6 @@
             color: white;
         }
 
-        .tobuy-preview {
-            background: #fff9e6;
-            border: 2px solid var(--warning-color);
-            border-radius: var(--border-radius);
-            padding: 12px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .tobuy-preview-item {
-            padding: 8px;
-            background: white;
-            border-radius: 5px;
-            margin-bottom: 6px;
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
         /* Main Container */
         .container {
             flex: 1;
@@ -1047,14 +1027,6 @@
                         🗑️ 清空数据
                     </button>
                 </div>
-
-                <!-- To-Buy Preview -->
-                <div class="sidebar-section">
-                    <h3>🛒 购物清单</h3>
-                    <div id="toBuyPreview" class="tobuy-preview">
-                        <p style="text-align: center; color: #999; font-size: 12px;">暂无待购产品</p>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -1069,7 +1041,6 @@
         <div class="tabs" id="tabsContainer">
             <button class="tab active" onclick="switchTab('guide')">📖 使用指南</button>
             <button class="tab" onclick="switchTab('calculator')">🧮 促销计算器</button>
-            <button class="tab" onclick="switchTab('tobuy')">🛒 购物清单</button>
             <button class="tab" onclick="switchTab('manage-products')">➕ 管理产品</button>
             <button class="tab" onclick="switchTab('summary')">📊 价格总览</button>
             <!-- Dynamic product/category tabs removed - now using left sidebar navigation -->
@@ -1301,45 +1272,6 @@
             </div>
         </div>
 
-        <!-- To Buy List Tab -->
-        <div id="tobuy" class="tab-content">
-            <h3 style="color: #667eea; margin-bottom: 20px;">🛒 购物清单 - To Buy List</h3>
-
-            <div class="product-management">
-                <h3>➕ 添加待购商品</h3>
-                <div class="add-product-form">
-                    <input type="text" id="toBuyItemName" placeholder="商品名称 (例如: iPhone 15 Pro)" maxlength="100">
-                    <input type="text" id="toBuyStore" placeholder="期望商店 (可选)" maxlength="50">
-                    <input type="number" id="toBuyTargetPrice" placeholder="目标价格 (可选)" step="0.01">
-                    <input type="text" id="toBuyNotes" placeholder="备注 (可选)" maxlength="200">
-                    <button class="btn btn-success" onclick="addToBuyItem()">添加到清单</button>
-                </div>
-                <div class="tip-box">
-                    <strong>💡 提示：</strong><br>
-                    • 在这里记录你想购买的商品<br>
-                    • 设置目标价格，当价格达到时你就知道该买了<br>
-                    • 可以添加备注记录促销活动或其他重要信息
-                </div>
-            </div>
-
-            <h3 style="color: #667eea; margin-bottom: 20px;">📝 待购商品列表</h3>
-            <table class="price-table">
-                <thead>
-                    <tr>
-                        <th>商品名称</th>
-                        <th>期望商店</th>
-                        <th>目标价格</th>
-                        <th>备注</th>
-                        <th>添加日期</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="toBuyListTable">
-                    <!-- Will be populated by JavaScript -->
-                </tbody>
-            </table>
-        </div>
-
         <!-- Manage Products Tab -->
         <div id="manage-products" class="tab-content">
             <h3 style="color: #667eea; margin-bottom: 20px;">⭐ 产品管理 - Layout 4: 混合优化方案</h3>
@@ -1529,7 +1461,6 @@
         let productBrands = {}; // Brand for each product { productKey: brandName }
         let subcategories = {}; // Subcategories for each category { categoryKey: [subcat1, subcat2, ...] }
         let productSubcategories = {}; // Subcategory for each product { productKey: subcategoryName }
-        let toBuyList = []; // To buy list items
         let sortOrder = {}; // Sort order for each product { productKey: 'desc' | 'asc' }
 
         // Load data from localStorage
@@ -1568,12 +1499,6 @@
             const savedProductCategories = localStorage.getItem('productCategories');
             if (savedProductCategories) {
                 productCategories = JSON.parse(savedProductCategories);
-            }
-
-            // Load to-buy list
-            const savedToBuyList = localStorage.getItem('toBuyList');
-            if (savedToBuyList) {
-                toBuyList = JSON.parse(savedToBuyList);
             }
 
             // Load product brands
@@ -1660,11 +1585,6 @@
             localStorage.setItem('productCategories', JSON.stringify(productCategories));
         }
 
-        // Save to-buy list to localStorage
-        function saveToBuyList() {
-            localStorage.setItem('toBuyList', JSON.stringify(toBuyList));
-        }
-
         // Save product brands to localStorage
         function saveProductBrands() {
             localStorage.setItem('productBrands', JSON.stringify(productBrands));
@@ -1678,78 +1598,6 @@
         // Save product subcategories to localStorage
         function saveProductSubcategories() {
             localStorage.setItem('productSubcategories', JSON.stringify(productSubcategories));
-        }
-
-        // Add item to To Buy List
-        function addToBuyItem() {
-            const itemName = document.getElementById('toBuyItemName').value.trim();
-            const store = document.getElementById('toBuyStore').value.trim();
-            const targetPrice = parseFloat(document.getElementById('toBuyTargetPrice').value) || null;
-            const notes = document.getElementById('toBuyNotes').value.trim();
-
-            if (!itemName) {
-                alert('请填写商品名称！');
-                return;
-            }
-
-            const item = {
-                id: Date.now(), // Unique ID
-                name: itemName,
-                store: store || '-',
-                targetPrice: targetPrice,
-                notes: notes || '-',
-                dateAdded: new Date().toISOString().split('T')[0]
-            };
-
-            toBuyList.unshift(item); // Add to beginning
-            saveToBuyList();
-            updateToBuyList();
-            updateToBuyPreview();
-
-            // Clear form
-            document.getElementById('toBuyItemName').value = '';
-            document.getElementById('toBuyStore').value = '';
-            document.getElementById('toBuyTargetPrice').value = '';
-            document.getElementById('toBuyNotes').value = '';
-
-            alert('商品已添加到购物清单！');
-        }
-
-        // Delete item from To Buy List
-        function deleteToBuyItem(id) {
-            if (confirm('确定要删除这个商品吗？')) {
-                toBuyList = toBuyList.filter(item => item.id !== id);
-                saveToBuyList();
-                updateToBuyList();
-                updateToBuyPreview();
-            }
-        }
-
-        // Update To Buy List table
-        function updateToBuyList() {
-            const tbody = document.getElementById('toBuyListTable');
-
-            if (toBuyList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6c757d; padding: 30px;">暂无待购商品</td></tr>';
-                return;
-            }
-
-            let html = '';
-            toBuyList.forEach(item => {
-                const priceDisplay = item.targetPrice ? `RM ${item.targetPrice.toFixed(2)}` : '-';
-                html += `
-                    <tr>
-                        <td><strong>${item.name}</strong></td>
-                        <td>${item.store}</td>
-                        <td>${priceDisplay}</td>
-                        <td>${item.notes}</td>
-                        <td>${item.dateAdded}</td>
-                        <td><button class="btn-delete" onclick="deleteToBuyItem(${item.id})">删除</button></td>
-                    </tr>
-                `;
-            });
-
-            tbody.innerHTML = html;
         }
 
         // Add new category
@@ -2609,8 +2457,6 @@
                 updateStoreTable();
                 updateCategoryTable();
                 updateSubcategoryList();
-            } else if (tabId === 'tobuy') {
-                updateToBuyList();
             }
         }
 
@@ -3237,8 +3083,7 @@
                 productCategories: productCategories,
                 productBrands: productBrands,
                 subcategories: subcategories,
-                productSubcategories: productSubcategories,
-                toBuyList: toBuyList
+                productSubcategories: productSubcategories
             };
             const dataStr = JSON.stringify(exportObj, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
@@ -3271,7 +3116,6 @@
                             productBrands = imported.productBrands || {};
                             subcategories = imported.subcategories || {};
                             productSubcategories = imported.productSubcategories || {};
-                            toBuyList = imported.toBuyList || [];
                         } else {
                             // Old format (just price data)
                             priceData = imported;
@@ -3285,7 +3129,6 @@
                         saveProductBrands();
                         saveSubcategories();
                         saveProductSubcategories();
-                        saveToBuyList();
                         location.reload();
                     }
                 } catch (error) {
@@ -3297,7 +3140,7 @@
 
         // Clear all data
         function clearAllData() {
-            if (confirm('警告：这将删除所有价格记录、自定义产品、自定义商店、品类、购物清单和所有配置！确定要继续吗？')) {
+            if (confirm('警告：这将删除所有价格记录、自定义产品、自定义商店、品类和所有配置！确定要继续吗？')) {
                 if (confirm('再次确认：所有数据将被永久删除，无法恢复！')) {
                     localStorage.removeItem('ceravePriceData');
                     localStorage.removeItem('customProducts');
@@ -3308,7 +3151,6 @@
                     localStorage.removeItem('productBrands');
                     localStorage.removeItem('subcategories');
                     localStorage.removeItem('productSubcategories');
-                    localStorage.removeItem('toBuyList');
                     location.reload();
                 }
             }
@@ -3332,11 +3174,9 @@
             updateStoreTable();
             updateCategoryTable();
             updateSubcategoryList();
-            updateToBuyList();
 
             // Update sidebar
             updateCategoryNav();
-            updateToBuyPreview();
         }
 
         // Update Category Navigation in Sidebar
@@ -3381,44 +3221,6 @@
                     summaryContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }, 100);
-        }
-
-        // Update To-Buy Preview in Sidebar
-        function updateToBuyPreview() {
-            const container = document.getElementById('toBuyPreview');
-            if (!container) return;
-
-            if (!toBuyList || toBuyList.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #999; font-size: 12px;">暂无待购产品</p>';
-                return;
-            }
-
-            let html = '';
-            const displayCount = Math.min(toBuyList.length, 5); // Show max 5 items
-
-            for (let i = 0; i < displayCount; i++) {
-                const item = toBuyList[i];
-                html += `
-                    <div class="tobuy-preview-item">
-                        <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.name}">
-                            ${item.name}
-                        </span>
-                        ${item.targetPrice ? `<span style="color: var(--success-color); font-weight: bold; font-size: 11px;">RM${item.targetPrice}</span>` : ''}
-                    </div>
-                `;
-            }
-
-            if (toBuyList.length > displayCount) {
-                html += `
-                    <div style="text-align: center; margin-top: 8px;">
-                        <button onclick="switchTab('tobuy')" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-size: 12px; text-decoration: underline;">
-                            查看全部 ${toBuyList.length} 个
-                        </button>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = html;
         }
 
         // Global Search Function
