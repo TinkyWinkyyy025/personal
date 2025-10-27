@@ -1815,12 +1815,6 @@
             document.getElementById('newCategorySubcategories').value = '';
 
             // Refresh the page
-            const subcatCount = subcategories[key] ? subcategories[key].length : 0;
-            if (subcatCount > 0) {
-                alert(`品类添加成功！同时创建了 ${subcatCount} 个子品类。`);
-            } else {
-                alert('品类添加成功！');
-            }
             initializeApp();
         }
 
@@ -1970,7 +1964,6 @@
 
             // Refresh list
             updateSubcategoryList();
-            alert('子品类添加成功！');
         }
 
         // Delete subcategory
@@ -2056,7 +2049,6 @@
             document.getElementById('newStoreName').value = '';
 
             // Refresh the page to show new store
-            alert('商店添加成功！');
             initializeApp();
         }
 
@@ -2250,7 +2242,6 @@
             document.getElementById('newProductSubcategory').value = '';
 
             // Refresh necessary components
-            alert('产品添加成功！');
             generateTabs();
             createProductPage(key);
             updateProductTable();
