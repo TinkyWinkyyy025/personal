@@ -1536,9 +1536,11 @@
                 if (!priceData[key]) {
                     priceData[key] = [];
                 }
-                // Initialize product stores if not exists (use current stores)
-                if (!productStores[key]) {
-                    productStores[key] = [...stores]; // Use all current stores instead of empty defaultStores
+                // Initialize product stores if not exists or empty (use current stores)
+                if (!productStores[key] || productStores[key].length === 0) {
+                    productStores[key] = [...stores]; // Use all current stores
+                    // Save the update
+                    saveProductStores();
                 }
                 // Initialize product category if not exists
                 if (!productCategories[key]) {
