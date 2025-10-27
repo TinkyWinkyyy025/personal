@@ -1,0 +1,11 @@
+Record ID,Date,Product ID,Store,Regular Price,Promo Price,Promo Type,Remark
+1,2024-01-15,hydrating-88,Guardian,25.90,,,
+2,2024-01-15,hydrating-88,Watsons,26.50,,,
+3,2024-01-15,hydrating-88,Shopee,24.90,19.43,2nd Item -50%,Member price
+4,2024-01-20,hydrating-88,Guardian,25.90,22.02,2nd Item -30%,Weekend promo
+5,2024-02-01,hydrating-234,Guardian,45.90,,,
+6,2024-02-01,hydrating-234,Watsons,46.50,34.43,Buy 1 Free 1,Limited time
+7,2024-02-05,hydrating-400,Shopee,55.90,41.93,2nd Item -50%,App exclusive
+8,2024-02-10,garnier-toner,Guardian,18.90,,,
+9,2024-02-10,garnier-toner,Watsons,19.50,14.63,Buy 1 Free 1,
+10,2024-02-15,foaming-88,Caring,27.90,,,
