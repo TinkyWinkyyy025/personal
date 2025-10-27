@@ -1287,12 +1287,8 @@
                         <div class="add-product-form">
                             <input type="text" id="newProductName" placeholder="产品名称 (例如: iPhone 13 Pro)" maxlength="100">
                             <input type="text" id="newProductBrand" placeholder="品牌 (例如: Apple, Samsung)" maxlength="50">
-                            <select id="newProductCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;" onchange="updateSubcategoryDropdown()">
+                            <select id="newProductCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
                                 <option value="">选择品类...</option>
-                                <!-- Will be populated by JavaScript -->
-                            </select>
-                            <select id="newProductSubcategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                                <option value="">选择子品类...</option>
                                 <!-- Will be populated by JavaScript -->
                             </select>
                             <button class="btn btn-success" onclick="addNewProduct()">添加产品</button>
@@ -1301,8 +1297,7 @@
                             <strong>💡 提示：</strong><br>
                             • 产品名称：可以使用中文，这是显示在标签页的名称<br>
                             • 品牌：产品的品牌名称，用于搜索和筛选<br>
-                            • 品类：选择产品所属的大品类（如：护肤、美妆等）<br>
-                            • 子品类：选择具体的子分类（如：Cleanser, Toner等），需先选择品类<br>
+                            • 品类：选择产品所属的品类（如：护肤、美妆、电子产品等）<br>
                             • 产品ID会自动生成<br>
                             • 所有产品都可以编辑和删除
                         </div>
@@ -1370,32 +1365,13 @@
                         <div class="add-product-form">
                             <input type="text" id="newCategoryKey" placeholder="品类ID (例如: skincare, makeup)" maxlength="50">
                             <input type="text" id="newCategoryName" placeholder="品类名称 (例如: 护肤品, 美妆)" maxlength="100">
-                            <input type="text" id="newCategorySubcategories" placeholder="子品类 (用逗号分割，例如: toner, serum, cream)" maxlength="300">
                             <button class="btn btn-success" onclick="addNewCategory()">添加品类</button>
                         </div>
                         <div class="tip-box" style="margin-bottom: 25px;">
                             <strong>💡 提示：</strong><br>
                             • 品类ID：用英文和数字，不要有空格 (例如: skincare, makeup, electronics)<br>
                             • 品类名称：可以使用中文，这是显示在分组中的名称<br>
-                            • 子品类：用逗号分割，一次性添加多个子品类（例如：toner, serum, cream）<br>
-                            • 子品类可以留空，稍后再添加
-                        </div>
-
-                        <!-- Add Subcategories to Existing Category -->
-                        <h4 style="color: #667eea; margin-bottom: 15px; margin-top: 25px;">➕ 为现有品类添加子品类</h4>
-                        <div class="add-product-form">
-                            <select id="subcategoryTargetCategory" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
-                                <option value="">选择品类...</option>
-                                <!-- Will be populated by JavaScript -->
-                            </select>
-                            <input type="text" id="newSubcategoryName" placeholder="子品类名称 (例如: Essence, Ampoule)" maxlength="50">
-                            <button class="btn btn-success" onclick="addSubcategory()">添加子品类</button>
-                        </div>
-                        <div class="tip-box" style="margin-bottom: 25px;">
-                            <strong>💡 提示：</strong><br>
-                            • 先选择要添加子品类的品类<br>
-                            • 输入新的子品类名称<br>
-                            • 支持批量添加，可以用逗号分割
+                            • 所有品类都可以编辑和删除
                         </div>
 
                         <!-- Category List -->
@@ -1403,12 +1379,6 @@
                         <input type="text" id="categorySearchBox" class="search-box" placeholder="🔍 搜索品类..." oninput="filterCategoryTable()">
                         <div id="categoryTableContainer">
                             <!-- Will be populated by updateCategoryTable() -->
-                        </div>
-
-                        <!-- Subcategory List -->
-                        <h4 style="color: #667eea; margin-bottom: 15px; margin-top: 25px;">🔖 子品类列表</h4>
-                        <div id="subcategoryListContainer">
-                            <!-- Will be populated by updateSubcategoryList() -->
                         </div>
                     </div>
                 </div>
@@ -1605,7 +1575,6 @@
         function addNewCategory() {
             const key = document.getElementById('newCategoryKey').value.trim();
             const name = document.getElementById('newCategoryName').value.trim();
-            const subcategoriesInput = document.getElementById('newCategorySubcategories').value.trim();
 
             // Validation
             if (!key || !name) {
@@ -1629,39 +1598,12 @@
             customCategories[key] = name;
             categories[key] = name;
 
-            // Process subcategories if provided
-            if (subcategoriesInput) {
-                // Split by comma and trim each subcategory
-                const subcategoryList = subcategoriesInput
-                    .split(',')
-                    .map(s => s.trim())
-                    .filter(s => s.length > 0); // Remove empty strings
-
-                if (subcategoryList.length > 0) {
-                    // Initialize subcategories array for this category if not exists
-                    if (!subcategories[key]) {
-                        subcategories[key] = [];
-                    }
-
-                    // Add all subcategories
-                    subcategoryList.forEach(subcat => {
-                        if (!subcategories[key].includes(subcat)) {
-                            subcategories[key].push(subcat);
-                        }
-                    });
-
-                    // Save subcategories
-                    saveSubcategories();
-                }
-            }
-
             // Save and refresh
             saveCustomCategories();
 
             // Clear form
             document.getElementById('newCategoryKey').value = '';
             document.getElementById('newCategoryName').value = '';
-            document.getElementById('newCategorySubcategories').value = '';
 
             // Refresh the page
             initializeApp();
@@ -2024,7 +1966,6 @@
             const name = document.getElementById('newProductName').value.trim();
             const brand = document.getElementById('newProductBrand').value.trim();
             const category = document.getElementById('newProductCategory').value;
-            const subcategory = document.getElementById('newProductSubcategory').value;
 
             // Validation
             if (!name) {
@@ -2042,11 +1983,6 @@
                 return;
             }
 
-            if (!subcategory) {
-                alert('请选择子品类！');
-                return;
-            }
-
             // Auto-generate unique product ID
             const timestamp = Date.now();
             const random = Math.floor(Math.random() * 1000);
@@ -2058,7 +1994,6 @@
             priceData[key] = [];
             productCategories[key] = category;
             productBrands[key] = brand;
-            productSubcategories[key] = subcategory;
 
             // Initialize product stores with all current stores
             if (!productStores[key]) {
@@ -2070,14 +2005,12 @@
             saveData();
             saveProductCategories();
             saveProductBrands();
-            saveProductSubcategories();
             saveProductStores();
 
             // Clear form
             document.getElementById('newProductName').value = '';
             document.getElementById('newProductBrand').value = '';
             document.getElementById('newProductCategory').value = '';
-            document.getElementById('newProductSubcategory').value = '';
 
             // Refresh necessary components
             generateTabs();
@@ -2470,7 +2403,6 @@
             const brand = productBrands[productKey] || '';
             const categoryKey = productCategories[productKey] || '';
             const categoryName = categoryKey ? (categories[categoryKey] || '') : '';
-            const subcategory = productSubcategories[productKey] || '';
 
             contentDiv.innerHTML = `
                 <div style="margin-bottom: 20px;">
@@ -2478,7 +2410,6 @@
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         ${brand ? `<span class="product-badge" style="background: #2196f3;">🏷️ ${brand}</span>` : ''}
                         ${categoryName ? `<span class="product-badge" style="background: #ff9800;">📁 ${categoryName}</span>` : ''}
-                        ${subcategory ? `<span class="product-badge" style="background: #4caf50;">🔖 ${subcategory}</span>` : ''}
                     </div>
                 </div>
 
@@ -2992,7 +2923,6 @@
                 const data = priceData[key] || [];
                 const productStoresList = productStores[key] || [];
                 const brand = productBrands[key] || '';
-                const subcategory = productSubcategories[key] || '';
 
                 let productHtml = `
                     <div style="margin-bottom: 35px; padding-left: 10px;">
@@ -3000,7 +2930,6 @@
                             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                                 <h4 style="color: #667eea; margin: 0;">${productName}</h4>
                                 ${brand ? `<span class="product-badge" style="background: #2196f3; font-size: 12px;">🏷️ ${brand}</span>` : ''}
-                                ${subcategory ? `<span class="product-badge" style="background: #4caf50; font-size: 12px;">🔖 ${subcategory}</span>` : ''}
                             </div>
                             <button class="btn btn-primary" onclick="switchTab('${key}')" style="padding: 8px 16px; font-size: 14px;">
                                 📝 记录价格
