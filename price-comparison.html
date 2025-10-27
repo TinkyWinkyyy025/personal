@@ -2933,10 +2933,15 @@
 
                 let productHtml = `
                     <div style="margin-bottom: 35px; padding-left: 10px;">
-                        <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <h4 style="color: #667eea; margin: 0;">${productName}</h4>
-                            ${brand ? `<span class="product-badge" style="background: #2196f3; font-size: 12px;">🏷️ ${brand}</span>` : ''}
-                            ${subcategory ? `<span class="product-badge" style="background: #4caf50; font-size: 12px;">🔖 ${subcategory}</span>` : ''}
+                        <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <h4 style="color: #667eea; margin: 0;">${productName}</h4>
+                                ${brand ? `<span class="product-badge" style="background: #2196f3; font-size: 12px;">🏷️ ${brand}</span>` : ''}
+                                ${subcategory ? `<span class="product-badge" style="background: #4caf50; font-size: 12px;">🔖 ${subcategory}</span>` : ''}
+                            </div>
+                            <button class="btn btn-primary" onclick="switchTab('${key}')" style="padding: 8px 16px; font-size: 14px;">
+                                📝 记录价格
+                            </button>
                         </div>
                 `;
 
