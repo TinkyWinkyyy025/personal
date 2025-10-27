@@ -1,0 +1,112 @@
+工作表,列A,列B,列C,列D,列E,列F,列G,列H,列I
+
+=== 工作表1: Products (产品列表) ===
+Product ID,Product Name,Brand,Category,Subcategory,Enabled Stores,Notes
+hydrating-88,CeraVe Hydrating Cleanser 88ml,CeraVe,护肤,Cleanser,"Guardian,Watsons,Caring,Shopee",温和保湿洁面
+hydrating-234,CeraVe Hydrating Cleanser 234ml,CeraVe,护肤,Cleanser,"Guardian,Watsons,Caring,Shopee",家庭装
+hydrating-400,CeraVe Hydrating Cleanser 400ml,CeraVe,护肤,Cleanser,"Guardian,Watsons,Shopee",超大容量
+foaming-88,CeraVe Foaming Cleanser 88ml,CeraVe,护肤,Cleanser,"Guardian,Watsons,Caring,Shopee",泡沫洁面
+foaming-234,CeraVe Foaming Cleanser 234ml,CeraVe,护肤,Cleanser,"Guardian,Watsons,Caring,Shopee",适合油性肌肤
+foaming-400,CeraVe Foaming Cleanser 400ml,CeraVe,护肤,Cleanser,"Guardian,Watsons,Shopee",经济装
+garnier-toner,Garnier Rose Water 400ml,Garnier,护肤,Toner,"Guardian,Watsons,Shopee",玫瑰水爽肤水
+hada-labo-lotion,Hada Labo Gokujyun Lotion,Hada Labo,护肤,Toner,"Guardian,Watsons,Shopee",肌研极润化妆水
+biore-sunscreen,Biore UV Aqua Rich SPF50,Biore,护肤,Sunscreen,"Guardian,Watsons,Shopee",防晒霜
+cerave-moisturizer,CeraVe Moisturizing Cream 454g,CeraVe,护肤,Moisturizer,"Guardian,Watsons,Shopee",保湿面霜
+maybelline-fit-me,Maybelline Fit Me Foundation,Maybelline,美妆,Foundation,"Watsons,Sephora,Shopee",粉底液
+loreal-mascara,L'Oreal Lash Paradise Mascara,L'Oreal,美妆,Mascara,"Guardian,Watsons,Sephora",睫毛膏
+nike-airmax,Nike Air Max 90,Nike,衣服,Shoes,"Shopee,Lazada",运动鞋
+uniqlo-tshirt,Uniqlo AIRism T-Shirt,Uniqlo,衣服,T-Shirt,"Shopee,Lazada",速干T恤
+casio-watch,Casio G-Shock GA-2100,Casio,配饰,Watch,"Shopee,Lazada",运动手表
+
+=== 工作表2: Price Records (价格记录) ===
+Record ID,Date,Product ID,Store,Regular Price,Promo Price,Promo Type,Remark
+1,2024-01-15,hydrating-88,Guardian,25.90,,,正常价格
+2,2024-01-15,hydrating-88,Watsons,26.50,,,
+3,2024-01-15,hydrating-88,Shopee,24.90,19.43,2nd Item -50%,会员专属
+4,2024-01-20,hydrating-88,Guardian,25.90,22.02,2nd Item -30%,周末促销
+5,2024-01-25,hydrating-88,Caring,27.90,,,
+6,2024-02-01,hydrating-234,Guardian,45.90,,,
+7,2024-02-01,hydrating-234,Watsons,46.50,34.88,Buy 1 Free 1,限时促销
+8,2024-02-01,hydrating-234,Shopee,43.90,,,
+9,2024-02-05,hydrating-400,Shopee,55.90,41.93,2nd Item -50%,App专享
+10,2024-02-05,hydrating-400,Guardian,58.90,,,
+11,2024-02-05,hydrating-400,Watsons,57.50,,,
+12,2024-02-10,garnier-toner,Guardian,18.90,,,
+13,2024-02-10,garnier-toner,Watsons,19.50,14.63,Buy 1 Free 1,清仓促销
+14,2024-02-10,garnier-toner,Shopee,17.90,,,
+15,2024-02-15,foaming-88,Caring,27.90,,,
+16,2024-02-15,foaming-88,Guardian,26.90,,,
+17,2024-02-15,foaming-88,Watsons,28.50,21.38,2nd Item -50%,
+18,2024-02-20,hada-labo-lotion,Guardian,32.90,,,
+19,2024-02-20,hada-labo-lotion,Watsons,33.50,25.13,2nd Item -50%,
+20,2024-02-20,hada-labo-lotion,Shopee,29.90,,,人气产品
+21,2024-02-25,biore-sunscreen,Guardian,28.90,,,
+22,2024-02-25,biore-sunscreen,Watsons,29.50,,,
+23,2024-02-25,biore-sunscreen,Shopee,26.90,20.18,2nd Item -50%,
+24,2024-03-01,cerave-moisturizer,Guardian,68.90,,,
+25,2024-03-01,cerave-moisturizer,Watsons,69.50,52.13,2nd Item -50%,会员日
+26,2024-03-01,cerave-moisturizer,Shopee,65.90,,,
+27,2024-03-05,maybelline-fit-me,Watsons,32.90,,,
+28,2024-03-05,maybelline-fit-me,Sephora,35.90,,,
+29,2024-03-05,maybelline-fit-me,Shopee,29.90,22.43,2nd Item -50%,
+30,2024-03-10,loreal-mascara,Guardian,39.90,,,
+31,2024-03-10,loreal-mascara,Watsons,41.90,31.43,2nd Item -50%,
+32,2024-03-10,loreal-mascara,Sephora,42.90,,,
+33,2024-03-15,nike-airmax,Shopee,599.00,449.00,3.15促销,限时折扣
+34,2024-03-15,nike-airmax,Lazada,619.00,,,
+35,2024-03-20,uniqlo-tshirt,Shopee,49.90,,,
+36,2024-03-20,uniqlo-tshirt,Lazada,49.90,39.92,买2免1,
+37,2024-03-25,casio-watch,Shopee,399.00,299.00,特价,品牌日
+38,2024-03-25,casio-watch,Lazada,420.00,,,
+
+=== 工作表3: Stores (商店列表) ===
+Store Name,Type,Website,Notes
+Guardian,实体店+线上,www.guardian.com.my,大型连锁药妆店
+Watsons,实体店+线上,www.watsons.com.my,屈臣氏 - 经常有促销
+Caring,实体店+线上,www.caring2u.com,Caring Pharmacy
+Shopee,线上,shopee.com.my,电商平台 - 常有大促
+Lazada,线上,www.lazada.com.my,电商平台 - 品牌日优惠多
+Sephora,实体店+线上,www.sephora.my,高端美妆专卖
+
+=== 工作表4: Categories (品类管理) ===
+Category ID,Category Name,Subcategories,Product Count
+skincare,护肤,"Cleanser,Toner,Serum,Moisturizer,Sunscreen,Eye Cream,Mask",10
+makeup,美妆,"Foundation,Concealer,Powder,Blush,Eyeshadow,Lipstick,Mascara",2
+clothing,衣服,"T-Shirt,Pants,Dress,Jacket,Shoes",2
+accessories,配饰,"Bag,Watch,Jewelry,Hat,Belt",1
+electronics,电子产品,"Phone,Laptop,Tablet,Headphones,Charger",0
+food,食品,"Snacks,Beverages,Health Food,Supplements",0
+
+=== 工作表5: To-Buy List (购物清单) ===
+Item Name,Preferred Store,Target Price,Current Best,Price Gap,Notes,Date Added,Status
+iPhone 15 Pro,Shopee,4500.00,4799.00,299.00,等12.12大促,2024-01-15,待购
+Dyson吹风机,Lazada,1200.00,1399.00,199.00,关注双11,2024-01-20,待购
+CeraVe PM Lotion,Guardian,35.00,39.90,4.90,会员日可能有折扣,2024-02-01,待购
+Nike Air Max 270,Shopee,450.00,599.00,149.00,等品牌日,2024-02-05,待购
+Sony WH-1000XM5,Lazada,999.00,1299.00,300.00,等促销活动,2024-02-10,待购
+The Ordinary Niacinamide,Shopee,25.00,32.90,7.90,等补货促销,2024-02-15,待购
+Lululemon Align Leggings,Lazada,280.00,368.00,88.00,,2024-02-20,待购
+Kindle Paperwhite,Shopee,480.00,599.00,119.00,等Prime Day,2024-02-25,待购
+
+=== 工作表6: Price Analysis (价格分析 - 需要手动创建公式) ===
+Product ID,Product Name,Current Low,Best Store,Historical Low,Average Price,Price Trend,Total Records,Last Updated
+说明：此工作表需要手动创建并添加公式
+公式参考：请查看 google-sheets-template-README.md 文档
+
+B2公式: =VLOOKUP(A2, Products!A:B, 2, FALSE)
+C2公式: =IFERROR(MIN(FILTER('Price Records'!E:F, 'Price Records'!C:C=A2, 'Price Records'!B:B=MAX(FILTER('Price Records'!B:B, 'Price Records'!C:C=A2)))), "-")
+E2公式: =IFERROR(MIN(FILTER('Price Records'!E:F, 'Price Records'!C:C=A2)), "-")
+F2公式: =IFERROR(AVERAGE(FILTER('Price Records'!E:F, 'Price Records'!C:C=A2)), "-")
+H2公式: =COUNTIF('Price Records'!C:C, A2)
+I2公式: =IFERROR(TEXT(MAX(FILTER('Price Records'!B:B, 'Price Records'!C:C=A2)), "YYYY-MM-DD"), "-")
+
+=== 促销计算器 (可选工作表) ===
+促销类型,输入原价,计算公式,结果
+第二件半价,25.90,=B2*1.5/2,19.43
+第二件-30%,25.90,=B3*1.7/2,22.02
+买一送一,25.90,=B4/2,12.95
+买二送一,25.90,=B5*2/3,17.27
+固定价格 3件RM60,25.90,=60/3,20.00
+8折,25.90,=B7*0.8,20.72
+买3付2,25.90,=B8*2/3,17.27
+3件特价RM50,25.90,=50/3,16.67
