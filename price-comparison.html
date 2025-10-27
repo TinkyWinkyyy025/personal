@@ -2801,8 +2801,6 @@
                 if (promoInput) promoInput.value = '';
             });
             document.getElementById(`${productKey}-remark`).value = '';
-
-            alert('价格记录已保存！');
         }
 
         // Update product page
@@ -3291,7 +3289,6 @@
                         saveSubcategories();
                         saveProductSubcategories();
                         saveToBuyList();
-                        alert('数据导入成功！');
                         location.reload();
                     }
                 } catch (error) {
