@@ -1611,21 +1611,21 @@
                 if (!priceData[key]) {
                     priceData[key] = [];
                 }
-                // Initialize product stores if not exists (default to all default stores)
+                // Initialize product stores if not exists (use current stores)
                 if (!productStores[key]) {
-                    productStores[key] = [...defaultStores];
+                    productStores[key] = [...stores]; // Use all current stores instead of empty defaultStores
                 }
-                // Initialize product category if not exists (default to skincare for default products)
+                // Initialize product category if not exists
                 if (!productCategories[key]) {
-                    productCategories[key] = defaultProducts[key] ? 'skincare' : '';
+                    productCategories[key] = '';
                 }
                 // Initialize product brand if not exists
                 if (!productBrands[key]) {
-                    productBrands[key] = defaultProductBrands[key] || '';
+                    productBrands[key] = '';
                 }
                 // Initialize product subcategory if not exists
                 if (!productSubcategories[key]) {
-                    productSubcategories[key] = defaultProductSubcategories[key] || '';
+                    productSubcategories[key] = '';
                 }
             });
         }
@@ -1838,7 +1838,6 @@
                 // Save
                 saveCustomCategories();
 
-                alert('品类已删除！');
                 initializeApp();
             }
         }
@@ -2065,7 +2064,6 @@
                 // Save
                 saveCustomStores();
 
-                alert('商店已删除！');
                 initializeApp();
             }
         }
@@ -2261,7 +2259,6 @@
                 saveCustomProducts();
                 saveData();
 
-                alert('产品已删除！');
                 initializeApp(); // This will also update sidebar
             }
         }
