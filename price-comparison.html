@@ -2432,12 +2432,14 @@
         // Update store table with compact layout
         function updateStoreTable() {
             const container = document.getElementById('storeTableContainer');
-            const header = document.getElementById('storeListHeader');
+            const header = document.getElementById('storeManagementHeader');
 
             if (!container) return;
 
             const storeCount = stores.length;
-            header.textContent = `🏪 商店列表 (${storeCount}个商店)`;
+            if (header) {
+                header.textContent = `🏪 商店管理 (${storeCount}个商店)`;
+            }
 
             let html = '<table class="compact-table"><thead><tr>';
             html += '<th>商店名称</th>';
@@ -2489,12 +2491,14 @@
         // Update category table with compact layout
         function updateCategoryTable() {
             const container = document.getElementById('categoryTableContainer');
-            const header = document.getElementById('categoryListHeader');
+            const header = document.getElementById('categoryManagementHeader');
 
             if (!container) return;
 
             const categoryCount = Object.keys(categories).length;
-            header.textContent = `🏷️ 品类列表 (${categoryCount}个品类)`;
+            if (header) {
+                header.textContent = `🏷️ 品类管理 (${categoryCount}个品类)`;
+            }
 
             let html = '<table class="compact-table"><thead><tr>';
             html += '<th>品类名称</th>';
@@ -3365,21 +3369,19 @@
                 </div>
             `;
 
-            // Add each category
+            // Add each category (show all categories, not just those with products)
             Object.keys(categories).forEach(categoryKey => {
                 const categoryName = categories[categoryKey];
                 const productCount = Object.keys(products).filter(key =>
                     productCategories[key] === categoryKey
                 ).length;
 
-                if (productCount > 0) {
-                    html += `
-                        <div class="category-nav-item" onclick="scrollToCategoryInSummary('${categoryKey}')">
-                            <span>📁 ${categoryName}</span>
-                            <span style="font-size: 11px; opacity: 0.7;">${productCount}</span>
-                        </div>
-                    `;
-                }
+                html += `
+                    <div class="category-nav-item" onclick="scrollToCategoryInSummary('${categoryKey}')">
+                        <span>📁 ${categoryName}</span>
+                        <span style="font-size: 11px; opacity: 0.7;">${productCount}</span>
+                    </div>
+                `;
             });
 
             container.innerHTML = html;
